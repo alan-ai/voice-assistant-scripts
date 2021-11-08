@@ -1,6 +1,6 @@
 # Example scripts for voice assistants
 
-Here you can find examples of scripts for voice assistants built with the <a href="https://alan.app/" target="_blank">Alan AI Platform</a>. Study them to see how the dialog between the user and voice assistant can be laid out and use them as a starting point to write your own voice scripts.
+Here you can find example scripts for in-app voice assistants created with the <a href="https://alan.app/" target="_blank">Alan Platform</a>. Study them to see how the dialog between the user and voice assistant can be laid out and use them as a starting point to write your own voice scripts.
 
 For some of these examples, Alan provides voice projects in its Playground. Get Alan Playground for <a href= "https://apps.apple.com/ca/app/alan-playground/id1474478921" target="_blank">iOS</a> or <a href= "https://play.google.com/store/apps/details?id=app.alan.playground" target="_blank">Android</a> and check out how conversational voice experiences can add value to your apps.
 
