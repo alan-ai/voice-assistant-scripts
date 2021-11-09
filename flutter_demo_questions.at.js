@@ -57,7 +57,7 @@ question(
   (p) => {
     p.play(
       "We have several types of clothes, accessories, and home (items|goods) available. (What would you like to order?|)",
-      "We offer clothes, accessories, and home (items|goods). (What would you like to order?|)"
+      "We offer clothes, accessories, and home (items|goods). (What would you like to order?| What o you have in mind?)"
     );
   }
 );
