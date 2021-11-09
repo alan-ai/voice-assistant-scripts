@@ -9,8 +9,8 @@
 // To define a voice command, we will use the 'intent()' function (https://alan.app/docs/server-api/commands-and-responses#intent).
 // Responses can be played back to the user with the 'play()' function (https://alan.app/docs/server-api/commands-and-responses#play).
 
-intent('Hello world', p => {
-    p.play('Hi there');
+intent("Hello world", (p) => {
+  p.play("Hi there");
 });
 
 // Try activating the button in the bottom right corner and saying "Hello world".
@@ -20,28 +20,18 @@ intent('Hello world', p => {
 // You can use multiple patterns (https://alan.app/docs/server-api/patterns) in a single intent.
 // This will allow you to have the same response played or action taken for different user inputs.
 
-intent(
-    'Who\'s there',
-    'What\'s your name',
-    p => {
-        p.play(
-            'My name is Alan.',
-            'It\'s Alan.',
-        );
-    },
-);
+intent("Do I know you?", "Who's there", "What's your name", (p) => {
+  p.play("My name is Alan.", "It's Alan.");
+});
 
 // Try: "Who's there" or "What's your name".
 // Notice that the matched intent is different this time (the input bubble has a link to line number 23).
 
 // You can also pass a list of patterns to the intent function.
-const intentPatterns = [
-    'What is your favorite food',
-    'What food do you like',
-];
+const intentPatterns = ["What is your favorite food", "What food do you like"];
 
-intent(intentPatterns, p => {
-    p.play('CPU time, yammy!');
+intent(intentPatterns, (p) => {
+  p.play("CPU time, yammy!");
 });
 
 // Try: "What is your favorite food" or "What food do you like".
@@ -50,16 +40,16 @@ intent(intentPatterns, p => {
 // In this case, alternatives might be used in them (https://alan.app/docs/server-api/patterns#patterns-with-alternatives).
 // Alternative sets are defined as (alt_1|alt_2|alt_n).
 
-intent('(I will have|Get me) a coffee, please', p => {
-    p.play('Sorry, I don\'t have hands to brew it.');
+intent("(I will have|Get me) a coffee, please", (p) => {
+  p.play("Sorry, I don't have hands to brew it.");
 });
 
 // Try: "I will have a coffee, please" or "Get me a coffee, please".
 
 // You can define the alternative set to be optional (https://alan.app/docs/server-api/patterns#optional-alternatives).
 
-intent('(Start|begin|take|) survey', p => {
-    p.play('(Sure.|OK.|) Starting a customer survey.');
+intent("(Start|begin|take|) survey", (p) => {
+  p.play("(Sure.|OK.|) Starting a customer survey.");
 });
 
 // Try: "Survey" and "Start survey".
@@ -74,14 +64,14 @@ intent('(Start|begin|take|) survey', p => {
 // Try to avoid this by using all that is described above. You can have multiple patterns with multiple alternative sets (strict or optional).
 
 intent(
-    '(How is|what is) the (weather|temperature) (today|)',
-    'Today\'s forecast',
-    p => {
-        p.play(
-            '(It is|Feels|) (great|awesome)!',
-            'Rainy, windy, and cold. (A total mess!|)',
-        );
-    },
+  "(How is|what is) the (weather|temperature) (today|)",
+  "Today's forecast",
+  (p) => {
+    p.play(
+      "(It is|Feels|) (great|awesome)!",
+      "Rainy, windy, and cold. (A total mess!|)"
+    );
+  }
 );
 
 // Try: "How is the weather today", "Today's forecast", "What is the temperature".
@@ -89,13 +79,13 @@ intent(
 // You can also use more than one 'play()'.
 // In this case, responses will be played one after another.
 
-intent('Let\'s play hide and seek', p => {
-    p.play('Sure.');
-    p.play('I\'ll count.');
-    p.play('One');
-    p.play('Two');
-    p.play('Three');
-    p.play('Found you!');
+intent("Let's play hide and seek", (p) => {
+  p.play("Sure.");
+  p.play("I'll count.");
+  p.play("One");
+  p.play("Two");
+  p.play("Three");
+  p.play("Found you!");
 });
 
 // Try: "Let's play hide and seek".
@@ -104,8 +94,10 @@ intent('Let\'s play hide and seek', p => {
 // Later, such slots and their values can be used to differ the logic or give meaningful responses to the user.
 // Slots are defined as $(SLOT_NAME alt1|alt2|alt_n).
 
-intent('(I want|get me|add) a $(ITEM notebook|cellphone)', p => {
-    p.play('Your order is: $(ITEM). It will be delivered within the next 30 minutes.');
+intent("(I want|get me|add) a $(ITEM notebook|cellphone)", (p) => {
+  p.play(
+    "Your order is: $(ITEM). It will be delivered within the next 30 minutes."
+  );
 });
 
 // Try: "I want a notebook" or "Add a cellphone".
@@ -114,8 +106,8 @@ intent('(I want|get me|add) a $(ITEM notebook|cellphone)', p => {
 // You can access slot fields with 'p.SLOT_NAME'.
 // To use them in a string, you should define a string using the ` symbol and pass a desired slot field in ${}.
 
-intent('I want my walls to be $(COLOR green|blue|orange|yellow|white)', p => {
-    p.play(`Mmm, ${p.COLOR.value}. Nice, love it!`);
+intent("I want my walls to be $(COLOR green|blue|orange|yellow|white)", (p) => {
+  p.play(`Mmm, ${p.COLOR.value}. Nice, love it!`);
 });
 
 // Try: "I want my walls to be green" or "I want my walls to be orange".
@@ -135,11 +127,11 @@ intent('I want my walls to be $(COLOR green|blue|orange|yellow|white)', p => {
 //
 // Let's take the DATE predefined slot as an example.
 
-intent('What is $(DATE)', p => {
-    const formattedDate = p.DATE.moment.format('dddd, MMMM Do YYYY');
+intent("What is $(DATE)", (p) => {
+  const formattedDate = p.DATE.moment.format("dddd, MMMM Do YYYY");
 
-    p.play(`${p.DATE.value} is a date`);
-    p.play(`It is ${formattedDate}`);
+  p.play(`${p.DATE.value} is a date`);
+  p.play(`It is ${formattedDate}`);
 });
 
 // Try: "What is today", "What is tomorrow" and "What is next Friday".
@@ -152,12 +144,19 @@ intent('What is $(DATE)', p => {
 // The same logic applies to user-defined slots.
 // In patterns, the '_' symbol might be used as a pluralizer if added after a word. It means that this word might be used in both singular and plural forms.
 
-intent('Add $(NUMBER) $(INSTRUMENT trumpet_|guitar_|violin_) and $(NUMBER) $(INSTRUMENT trumpet_|guitar_|violin_)', p => {
-    console.log('Numbers array:', p.NUMBER_);
-    console.log('Instruments array:', p.INSTRUMENT_);
-    p.play(`The first position of your order is: ${p.NUMBER_[0].number} ${p.INSTRUMENT_[0].value}`);
-    p.play(`The second position of your order is: ${p.NUMBER_[1].number} ${p.INSTRUMENT_[1].value}`);
-});
+intent(
+  "Add $(NUMBER) $(INSTRUMENT trumpet_|guitar_|violin_) and $(NUMBER) $(INSTRUMENT trumpet_|guitar_|violin_)",
+  (p) => {
+    console.log("Numbers array:", p.NUMBER_);
+    console.log("Instruments array:", p.INSTRUMENT_);
+    p.play(
+      `The first position of your order is: ${p.NUMBER_[0].number} ${p.INSTRUMENT_[0].value}`
+    );
+    p.play(
+      `The second position of your order is: ${p.NUMBER_[1].number} ${p.INSTRUMENT_[1].value}`
+    );
+  }
+);
 
 // Try: "Add two guitars and one violin" or "Add five trumpets and three guitars".
 // In this intent, we also use the 'console.log()' function. The output of this function will be printed into the Info logs.
@@ -170,13 +169,13 @@ intent('Add $(NUMBER) $(INSTRUMENT trumpet_|guitar_|violin_) and $(NUMBER) $(INS
 // The first approach is to have an intent defined in the context.
 
 const openContext = context(() => {
-    intent('Activate the context', p => {
-        p.play('The context is now active');
-    });
+  intent("Activate the context", (p) => {
+    p.play("The context is now active");
+  });
 
-    follow('Is the context active', p => {
-        p.play('Yes. (It is active.|)');
-    });
+  follow("Is the context active", (p) => {
+    p.play("Yes. (It is active.|)");
+  });
 });
 
 // Try: "Is the context active" -> "Activate the context" -> "Is the context active"
@@ -187,15 +186,15 @@ const openContext = context(() => {
 // Another way how you can activate a context is by using the then() function (https://alan.app/docs/server-api/contexts#activating-the-context-manually).
 
 let chooseDrink = context(() => {
-    follow('(I want|get me) a $(DRINK tea|cup of tea|soda)', p => {
-        p.play(`You have ordered a ${p.DRINK.value}.`);
-    })
+  follow("(I want|get me) a $(DRINK tea|cup of tea|soda)", (p) => {
+    p.play(`You have ordered a ${p.DRINK.value}.`);
+  });
 });
 
-intent('Can I have something to drink', p => {
-    p.play('(Sure|Yes), we have tea and soda.');
-    p.play('Which would you like?');
-    p.then(chooseDrink);
+intent("Can I have something to drink", (p) => {
+  p.play("(Sure|Yes), we have tea and soda.");
+  p.play("Which would you like?");
+  p.then(chooseDrink);
 });
 
 // Try: "I want a cup of tea" -> "Can I have something to drink" -> "Get me a soda".
@@ -205,25 +204,25 @@ intent('Can I have something to drink', p => {
 // You can even create a conversational chain of any depth you like.
 
 let confirmOrder = context(() => {
-    follow('Yes', p => {
-        p.play('Your order is confirmed');
-    });
-    
-    follow('No', p => {
-        p.play('Your order is cancelled');
-    });
+  follow("Yes", (p) => {
+    p.play("Your order is confirmed");
+  });
+
+  follow("No", (p) => {
+    p.play("Your order is cancelled");
+  });
 });
 
 let chooseDish = context(() => {
-    follow('Get me a $(DISH pizza|burger)', p => {
-        p.play(`You have ordered a ${p.DISH.value}. Do you confirm?`);
-        p.then(confirmOrder);
-    })
+  follow("Get me a $(DISH pizza|burger)", (p) => {
+    p.play(`You have ordered a ${p.DISH.value}. Do you confirm?`);
+    p.then(confirmOrder);
+  });
 });
 
-intent('What is on the menu', p => {
-    p.play('We have pizza and burgers');
-    p.then(chooseDish);
+intent("What is on the menu", (p) => {
+  p.play("We have pizza and burgers");
+  p.then(chooseDish);
 });
 
 // Before trying the next set of commands make sure that the flowchart is expanded.
@@ -234,17 +233,21 @@ intent('What is on the menu', p => {
 
 // Questions to help with script/app usage
 question(
-    'What does this (app|script|project) do',
-    'What is this (app|script|project|)',
-    'Why do I need this',
-    reply('This is a Hello World Example project. Its main purpose is to get you introduced to basics of the Alan Platform!'),
+  "What does this (app|script|project) do",
+  "What is this (app|script|project|)",
+  "Why do I need this",
+  reply(
+    "This is a Hello World Example project. Its main purpose is to get you introduced to basics of the Alan Platform!"
+  )
 );
 
 question(
-    'How does this work',
-    'How to use this',
-    'What can I do here',
-    'What (should I|can I|to) say',
-    'What commands are available',
-    reply('Just say: (hello world|what is the weather today|what is tomorrow|Add two guitars and one violin).'),
+  "How does this work",
+  "How to use this",
+  "What can I do here",
+  "What (should I|can I|to) say",
+  "What commands are available",
+  reply(
+    "Just say: (hello world|what is the weather today|what is tomorrow|Add two guitars and one violin)."
+  )
 );
