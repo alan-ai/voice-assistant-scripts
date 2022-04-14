@@ -172,7 +172,7 @@ async function playWeather(p) {
       p.play("Sorry, I do not know what was the weather in the past.");
       return;
     } else if (date.isAfter(api.moment(now).add(5, "days"))) {
-      p.play("Sorry, I can guess weather within 5 days only.");
+      p.play("Sorry, I can guess weather within 5 days only.", "Sorry, ask for a day in next 5 days");
       return;
     }
   }
@@ -238,7 +238,10 @@ function playForecast(p, data) {
       item.main.humidity
     );
 
-    const { id, description } = item.weather[0];
+    const {
+      id,
+      description
+    } = item.weather[0];
 
     if (description.includes("rain")) {
       rain = true;
@@ -386,15 +389,15 @@ function description(
   const description = DESCRIPTION[id][0];
   const prefixIndex = DESCRIPTION[id][1];
 
-  const temperature = isToday
-    ? Math.floor(temperatureMin)
-    : temperatureMin === temperatureMax
-    ? Math.floor(temperatureMin)
-    : "from " + Math.floor(temperatureMin);
+  const temperature = isToday ?
+    Math.floor(temperatureMin) :
+    temperatureMin === temperatureMax ?
+    Math.floor(temperatureMin) :
+    "from " + Math.floor(temperatureMin);
 
-  const prefix = isToday
-    ? PREFIX_TODAY[prefixIndex]
-    : PREFIX_FORECAST[prefixIndex];
+  const prefix = isToday ?
+    PREFIX_TODAY[prefixIndex] :
+    PREFIX_FORECAST[prefixIndex];
 
   const degreePrefix = prefixIndex > 0 ? "it's" : "";
 
@@ -431,7 +434,7 @@ function isDateToday(date, timeZone) {
   return (
     !date ||
     api.moment().tz(timeZone).format(DATE_FORMAT) ===
-      api.moment(date, timeZone).format(DATE_FORMAT)
+    api.moment(date, timeZone).format(DATE_FORMAT)
   );
 }
 

@@ -60,6 +60,7 @@ const whatLanguage = context(() => {
     if (!lang) {
       p.play(
         `I can not translate this to ${p.L}. Please choose another language`
+        `${p.L} is not one of the available languages, choose another language please`
       );
     } else {
       p.resolve(lang);
@@ -182,8 +183,11 @@ function translate(p, text, lang) {
 
   apiCall(
     p,
-    "translate",
-    { text: text, srcLang: "en", dstLang: lang },
+    "translate", {
+      text: text,
+      srcLang: "en",
+      dstLang: lang
+    },
     (response) => {
       if (!response.error) {
         p.play({
@@ -228,7 +232,7 @@ function capitalize(str) {
 
 function joinAnd(list) {
   let head = list.slice(0, -1);
-  return _.isEmpty(head)
-    ? list[0]
-    : head.join(", ") + ", and " + list.slice(-1);
+  return _.isEmpty(head) ?
+    list[0] :
+    head.join(", ") + ", and " + list.slice(-1);
 }
