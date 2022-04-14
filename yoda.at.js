@@ -41,13 +41,17 @@ intent(
   }
 );
 intent("testing the widget", (p) => {
-  p.play({ embeddedPage: true, page: "yoda.html" });
+  p.play({
+    embeddedPage: true,
+    page: "yoda.html"
+  });
 });
 intent(`(Show me|) what can I do here?`, `How does this app work?`, (p) => {
   p.play(
     `In this application, you can ask Yoda for some wisdom or to translate text.`
   );
 });
+
 function apiCall(p, command, param, callback) {
   let jsp = {
     url: "https://studio.alan.app/api_playground/" + command,
@@ -72,11 +76,13 @@ intent(`(How|) (do|would) (you|) (say|translate) $(I* (.*))`, async (p) => {
     p.play("should I say what?");
     phrase = await p.then(whatPhrase);
   }
-  apiCall(p, "askYoda", { query: phrase }, (response) => {
+  apiCall(p, "askYoda", {
+    query: phrase
+  }, (response) => {
     if (!response.error) {
       p.play(yodaVoice, response.translated);
     } else {
-      console.log(response.error);
+      console.log("askYoda----apiCall>", response.error);
     }
   });
 });
