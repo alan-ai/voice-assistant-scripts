@@ -45,7 +45,7 @@
 // - Electron: https://alan.app/docs/client-api/web/electron
 // - Web Component: https://alan.app/docs/client-api/web/web-component
 
-question("what is this", "what dies this app do?", (p) => {
+question("what is this", "what do this app do?", (p) => {
   p.play(
     "This is an example app with voice capabilities. (Powered by Alan|Voice support is provided by Alan)"
   );

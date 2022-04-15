@@ -84,20 +84,24 @@ intent(
           });
           p.play(`${headlines[y]}`);
         }
-        p.play({ embeddedPage: true, command: "unSelect" });
+        p.play({
+          embeddedPage: true,
+          command: "unSelect"
+        });
       }
     });
   }
 );
 
 intent(
+  `What is this app?`,
   `What does this app do?`,
   `How does this work?`,
   `What can I do here?`,
   `How should I use this?`,
   reply(
     `This is a news project, and you can provide the most recent headlines in mainstream media` +
-      `Just ask me anything about the news, and I will try to answer it`
+    `Just ask me anything about the news, and I will try to answer it`
   )
 );
 

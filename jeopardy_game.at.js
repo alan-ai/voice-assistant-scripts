@@ -77,13 +77,13 @@ function getCategoryIntent(questionTree) {
     .map((categoryKey) => {
       const intents = project.subjects[categoryKey];
 
-      return intents
-        ? intents
-            .map((categoryIntent) => {
-              return `${categoryIntent}~${categoryKey}`;
-            })
-            .join("|")
-        : `${categoryKey}~${categoryKey}`;
+      return intents ?
+        intents
+        .map((categoryIntent) => {
+          return `${categoryIntent}~${categoryKey}`;
+        })
+        .join("|") :
+        `${categoryKey}~${categoryKey}`;
     })
     .join("|");
 }
@@ -101,7 +101,10 @@ async function startRound(p) {
   });
   p.play("Please select a category and value of a question");
 
-  const { price, category } = await p.then(categoryContext);
+  const {
+    price,
+    category
+  } = await p.then(categoryContext);
   const questions = p.userData.questionTree[category][price];
 
   if (!questions) {
@@ -121,7 +124,11 @@ async function startRound(p) {
     p.userData.answer = question.answer.replace(/<(.|\n)*?>/g, "");
     p.play(questionText);
 
-    return p.then(roundContext, { price, category, question });
+    return p.then(roundContext, {
+      price,
+      category,
+      question
+    });
   }
 }
 
@@ -215,7 +222,7 @@ const roundEndContext = context(() => {
     p.resolve(true);
   });
 
-  follow("(no|stop|finish|money|end)", (p) => {
+  follow("(no|stop|finish|money|end|done)", (p) => {
     p.resolve(false);
   });
 
@@ -254,12 +261,18 @@ const categoryContext = context(() => {
       const price = parseInt(p.PRICE.value);
       const category = p.CATEGORY.label.toLowerCase();
 
-      console.log({ price, category });
+      console.log({
+        price,
+        category
+      });
 
       const categoryPrices = p.userData.questionTree[category];
 
       if (categoryPrices[price]) {
-        p.resolve({ price, category });
+        p.resolve({
+          price,
+          category
+        });
       } else {
         p.play(
           `There is no question for ${price}$ in the ${category} category`
@@ -277,7 +290,10 @@ const categoryContext = context(() => {
     p.play("Please select the value of a question");
     const price = await p.then(priceContext);
 
-    p.resolve({ price, category });
+    p.resolve({
+      price,
+      category
+    });
   });
 });
 

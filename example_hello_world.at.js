@@ -48,7 +48,7 @@ intent("(I will have|Get me) a coffee, please", (p) => {
 
 // You can define the alternative set to be optional (https://alan.app/docs/server-api/patterns#optional-alternatives).
 
-intent("(Start|begin|take|) survey", (p) => {
+intent("(I want to|Lets|) (Start|begin|take|) the survey", (p) => {
   p.play("(Sure.|OK.|) Starting a customer survey.");
 });
 

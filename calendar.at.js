@@ -22,7 +22,7 @@ follow("(and|) (what|) (about|) $(DATE)", (p) => {
 });
 
 intent("(what is|) is (my|) timezone", (p) => {
-  p.play("Your current timezone is " + p.timeZone);
+  p.play("(Your|The) current timezone is " + p.timeZone);
 });
 
 intent("(what is|) (the|) (current|) time (now|)", (p) => {

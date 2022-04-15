@@ -26,7 +26,7 @@ const HOME_PRODUCTS = project.products
 
 question(
   "What can (you|I) do",
-  "What is this (app|application)",
+  "What is this (app|application) (use|)",
   "What is (shrine|flutter shrine)",
   (p) => {
     p.play(

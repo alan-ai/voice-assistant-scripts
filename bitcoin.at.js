@@ -55,9 +55,9 @@ intent(
   "how many $(CURRENCY dollar|dollars|pound|pounds|euro|euros|ruble|rubles) (do I need|does it cost|are needed) to buy Bitcoin",
   async (p) => {
     const currencyCode =
-      p.CURRENCY && p.CURRENCY.value
-        ? getCurrencyCode(p.CURRENCY.value)
-        : "USD";
+      p.CURRENCY && p.CURRENCY.value ?
+      getCurrencyCode(p.CURRENCY.value) :
+      "USD";
 
     const url = `https://api.coindesk.com/v1/bpi/currentprice/${currencyCode}.json`;
     const data = await getData(url);
@@ -70,7 +70,7 @@ intent(
     const currencyName = getCurrencyString(currencyCode);
 
     p.play(
-      `The (current|) (Bitcoin price|price of Bitcoin) is ${price} ${currencyName}`
+      `The (current|) (Bitcoin price|price of Bitcoin|value of Bitcoin) is ${price} ${currencyName}`,
     );
   }
 );

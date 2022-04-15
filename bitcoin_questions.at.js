@@ -73,7 +73,7 @@ intent(
 );
 
 intent(
-  "how to (start mining|mine) (Bitcoin|)",
+  "how to (start mining|mine) (Bitcoin|)", "how to start a blockchain",
   reply(
     "It's an advanced topic and it's too long to be explained during this conversation. Search over the internet, there are lots of different guides available."
   )

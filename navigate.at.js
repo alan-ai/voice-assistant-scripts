@@ -23,12 +23,10 @@ let where = context(() => {
   title("Question where?");
 
   follow("(to my|to|my|) $(L home|office|work|gym)", async (p) =>
-    p.resolve(await getLocation(p, "your", p.L.value))
-  );
+    p.resolve(await getLocation(p, "your", p.L.value)));
 
   follow("$(NAME) ('s|) $(L home|office|work)", async (p) =>
-    p.resolve(await getLocation(p, p.NAME.value, p.L.value))
-  );
+    p.resolve(await getLocation(p, p.NAME.value, p.L.value)));
 
   follow("(to|) $(C next|last|current) $(E meeting|event|appointment)", (p) =>
     p.play(`navigating to ${p.C} ${p.E}`)
@@ -85,9 +83,14 @@ let whatAddress = context(() => {
 function parseAddress(items) {
   let addr = items.join(" ");
   if (addr.length > 5) {
-    return { valid: true, address: addr };
+    return {
+      valid: true,
+      address: addr
+    };
   }
-  return { valid: false };
+  return {
+    valid: false
+  };
 }
 
 function getLocation(p, person, loc) {
@@ -127,7 +130,7 @@ intent(
     if (addr) {
       p.play(`navigating to ${p.L}, ${addr}`);
     } else {
-      p.play("(ok|fine|sure)");
+      p.play("(ok|fine|sure|definitely)");
     }
   }
 );

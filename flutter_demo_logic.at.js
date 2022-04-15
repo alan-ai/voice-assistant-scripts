@@ -100,7 +100,7 @@ intent(
 );
 
 intent(
-  "(add|I want|order|get me) $(NUMBER) $(ITEM p:itemsIntent)",
+  "(add|I want|order|get me) $(NUMBER) (of|) $(ITEM p:itemsIntent)",
   "(add|I want|order|get me) $(NUMBER) $(ITEM p:itemsIntent) and $(NUMBER) $(ITEM p:itemsIntent)",
   "(add|I want|order|get me) $(ITEM p:itemsIntent) and $(NUMBER) $(ITEM p:itemsIntent)",
   "(add|I want|order|get me) $(NUMBER) $(ITEM p:itemsIntent) and $(ITEM p:itemsIntent)",
@@ -394,7 +394,9 @@ intent("(finish|confirm) (my|) (order|)", (p) => {
   if (_.isEmpty(p.visual.order)) {
     p.play("Please, add something to your order first");
   } else {
-    p.play({ command: "finishOrder" });
+    p.play({
+      command: "finishOrder"
+    });
     p.play("Your order has been confirmed, thank you!");
   }
 });
@@ -429,7 +431,9 @@ const confirmQuality = context(() => {
 
   follow("(No|Wrong|Change)", async (p) => {
     p.play("How many do you want?");
-    p.resolve(await p.then(howMany, { state: p.state }));
+    p.resolve(await p.then(howMany, {
+      state: p.state
+    }));
   });
 });
 
@@ -514,7 +518,9 @@ const confirm = context(() => {
     "(I want to|I wish to|) (proceed|confirm|go on) (my|with my|) (order|)",
     "(yes|ok|correct|sure)",
     (p) => {
-      p.play({ command: "finishOrder" });
+      p.play({
+        command: "finishOrder"
+      });
       p.play("Your order has been confirmed, thank you!");
       p.resolve(null);
     }
@@ -547,7 +553,9 @@ const repeatListItems = context(() => {
   title("repeat items");
 
   follow("(yes|sure|ok|next|show more)", (p) => {
-    const { state } = p;
+    const {
+      state
+    } = p;
 
     const showItems = state.items.slice(state.offset);
 
@@ -562,7 +570,9 @@ const repeatListItems = context(() => {
   });
 
   follow("(could you|) (please|) (repeat|say again)", (p) => {
-    const { state } = p;
+    const {
+      state
+    } = p;
     if (!state.items) {
       p.play("There are no items");
       console.log("There are no items");
@@ -616,11 +626,15 @@ function playTypeList(p, typeList) {
 
   p.play("What would you like?");
 
-  p.then(categoryTypeContext, { state: p.state });
+  p.then(categoryTypeContext, {
+    state: p.state
+  });
 }
 
 function highlightProductList(p, productList, isFirstPage) {
-  const { state } = p;
+  const {
+    state
+  } = p;
   const itemsLength = productList.length;
   const limit = itemsLength <= LIST_STEP + 1 ? itemsLength : LIST_STEP;
   const othersCount = itemsLength - limit;
@@ -651,7 +665,9 @@ function highlightProductList(p, productList, isFirstPage) {
   }
 
   if (isFirstPage) {
-    p.then(repeatListItems, { state });
+    p.then(repeatListItems, {
+      state
+    });
   }
 }
 
@@ -674,7 +690,9 @@ async function addItems(p, productList, productQuantities, offset) {
         productsMap[productList[0]].name
       }. Is this correct?`
     );
-    const confirmedQuality = await p.then(confirmQuality, { state: p.state });
+    const confirmedQuality = await p.then(confirmQuality, {
+      state: p.state
+    });
     if (!confirmedQuality) {
       return;
     }
@@ -692,9 +710,9 @@ async function addItems(p, productList, productQuantities, offset) {
     }
 
     const quantity =
-      productQuantities && productQuantities[index - offset]
-        ? productQuantities[index - offset]
-        : 1;
+      productQuantities && productQuantities[index - offset] ?
+      productQuantities[index - offset] :
+      1;
     const name = productsMap[id].name;
 
     if (quantity > 99) {

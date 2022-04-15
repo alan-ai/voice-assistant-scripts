@@ -182,6 +182,7 @@ intent(
   "How does this app can help?",
   "What does this app do?",
   "How does this work?",
+  "How can you help me?",
   "What can I do here?",
   reply(
     "This is a calculator project, and you can do simple math operations here Just ask me any mathematical calculation, and I will try to answer it"
