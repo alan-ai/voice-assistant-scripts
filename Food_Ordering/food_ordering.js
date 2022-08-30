@@ -8,7 +8,7 @@ Now there are four categories for food: drinks, pizza, street food, desserts.
 
 const menu = {
     "drink": [
-        {id: "sod", title: "Cola", price: 2, type: "drink", alt: ["Coca-cola", "Soda", "Coca cola"]},
+        {id: "sod", title: "Cola", price: 2, type: "drink", alt: ["Coca-cola", "Soda", "Coca cola", "Coke", "Diet Coke"]},
         {id: "amr", title: "Americano", price: 1, type: "drink"},
         {id: "lat", title: "Latte", price: 3, type: "drink"},
         {id: "cap", title: "Cappuccino", price: 3, type: "drink"},
