@@ -6,7 +6,10 @@ This is a script for Food Ordering demo app for delivering food
 Now there are four categories for food: drinks, pizza, street food, desserts.
 */
 
-corpus({url: "https://en.wikipedia.org/wiki/Fast_food", depth: 1});
+corpus(
+    {url: "https://en.wikipedia.org/wiki/Fast_food", depth: 1},
+    {url: "https://resources.workable.com/waiter-or-waitress-job-description", depth: 1},
+);
 
 
 const menu = {
