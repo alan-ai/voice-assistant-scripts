@@ -6,6 +6,9 @@ This is a script for Food Ordering demo app for delivering food
 Now there are four categories for food: drinks, pizza, street food, desserts.
 */
 
+corpus({url: "https://en.wikipedia.org/wiki/Fast_food", depth: 1});
+
+
 const menu = {
     "drink": [
         {id: "sod", title: "Cola", price: 2, type: "drink", alt: ["Coca-cola", "Soda", "Coca cola", "Coke", "Diet Coke"]},
@@ -51,6 +54,7 @@ const dishes = [
     "Meatloaf",
     "Grits",
     "Hamburger",
+    "ice cream",
 ];
 
 
