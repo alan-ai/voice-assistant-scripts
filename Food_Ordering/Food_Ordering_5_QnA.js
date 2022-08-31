@@ -26,6 +26,7 @@ intent(
     "What can I (order|have|get)",
     "(What is|What's) on the menu",
     p => {
+        p.play({command: 'navigation', route: '/menu'});
         p.play("We (have several|offer) pizzas, street foods, desserts, and drinks available. (What would you like to order?|To place an order, choose a food category and add items from the menu to the cart.)");
     }
 );

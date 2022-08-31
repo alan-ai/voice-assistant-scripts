@@ -73,10 +73,9 @@ intent(
         if (p.state.lastId && p.state.lastName) {
             let number = p.NUMBER && p.NUMBER.number > 0 ? p.NUMBER.number : 1;
             if (number > 99) {
-                p.play(`(Sorry,|) we don't have that many ${p.state.lastName}`);
                 number = 1;
                 p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
-                p.play(`So I've added ${number} more`);
+                p.play(`(Sorry,|) we don't have that many ${p.state.lastName}. (So I've added|Will add) ${number} more.`);
             } else {
                 p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
                 p.play(
@@ -108,17 +107,14 @@ function addItems(p, items, shift, pos = []) {
                 number = i < pos.length && pos[i] > -1 ? p.NUMBER_[pos[i]] : 1;
             }
             if (number > 99) {
-                p.play(`(Sorry,|) we don't have that many ${items[i].value}`);
                 number = 1;
-                p.play({command: 'addToCart', item: id, quantity: number});
-                p.play(`So I've added ${number}`);
-            } else {
-                p.play({command: 'addToCart', item: id, quantity: number});
-                answer += i > 0 ? " and " : "Added ";
-                answer += `${number} ${items[i].value} `;
-                if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
-                    answer += number > 1 ? "pizzas " : "pizza ";
-                }
+                p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
+            }
+            p.play({command: 'addToCart', item: id, quantity: number});
+            answer += i > 0 ? " and " : "Added ";
+            answer += `${number} ${items[i].value} `;
+            if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
+                answer += number > 1 ? "pizzas " : "pizza ";
             }
         }
     }
