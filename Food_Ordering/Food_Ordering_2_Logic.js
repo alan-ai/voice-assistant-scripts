@@ -11,68 +11,18 @@ corpus(
     {url: "https://resources.workable.com/waiter-or-waitress-job-description", depth: 1},
 );
 
-
-const menu = {
-    "drink": [
-        {id: "sod", title: "Cola", price: 2, type: "drink", alt: ["Coca-cola", "Soda", "Coca cola", "Coke", "Diet Coke"]},
-        {id: "amr", title: "Americano", price: 1, type: "drink"},
-        {id: "lat", title: "Latte", price: 3, type: "drink"},
-        {id: "cap", title: "Cappuccino", price: 3, type: "drink"},
-        {id: "orj", title: "Orange juice", price: 3, type: "drink"},
-        {id: "tea", title: "Tea", price: 3, type: "drink"}
-    ],
-    "pizza": [
-        {id: "prn", title: "Pepperoni", price: 14, type: "pizza", alt: ["Pepperoni pizza"]},
-        {id: "mrg", title: "Margarita", price: 10, type: "pizza", alt: ["Margarita pizza"]},
-        {id: "4ch", title: "Cheese", price: 10, type: "pizza", alt: ["Cheese pizza"]},
-        {id: "haw", title: "Hawaiian", price: 10, type: "pizza", alt: ["Hawaiian pizza"]}
-    ],
-    "street food": [
-        {id: "brt", title: "Burrito", price: 12, type: "street food"},
-        {id: "brg", title: "Burger", price: 23, type: "street food"},
-        {id: "tco", title: "Taco", price: 10, type: "street food"},
-        {id: "snd", title: "Sandwich", price: 10, type: "street food"}
-    ],
-    "dessert": [
-        {id: "apl", title: "Apple pie", price: 5, type: "dessert"},
-        {id: "chc", title: "Cheesecake", price: 15, type: "dessert"}
-    ]
-};
-
-const dishes = [
-    "Spaghetti",
-    "Bruschetta",
-    "Chicken Parmigiana",
-    "Panini",
-    "Panna Cotta",
-    "Tramezzino",
-    "Tiramisu",
-    "Tortellini",
-    "Lasagna",
-    "Buffalo Chicken Wings",
-    "Tater Tots",
-    "Hot Dogs",
-    "Barbecue Ribs",
-    "Biscuits and Gravy",
-    "Meatloaf",
-    "Grits",
-    "Hamburger",
-    "ice cream",
-];
-
-
-const CATEGORY_ALIASES = _.reduce(Object.keys(menu), (a, p) => {
+const CATEGORY_ALIASES = _.reduce(Object.keys(project.menu), (a, p) => {
     const key = p.toLowerCase();
     a[key] = a[key + "s"] = a[key + "es"] = key;
     return a;
 }, {});
 
-const ID_TO_TYPES = _.reduce(menu, (a, p) => {
+const ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
     p.forEach(i => a[i.id] = i.type);
     return a;
 }, {});
 
-const ITEM_ALIASES = _.reduce(menu, (a, p) => {
+const ITEM_ALIASES = _.reduce(project.menu, (a, p) => {
     p.forEach(i => {
         let key = i.title.toLowerCase();
         a[key] = a[key + "s"] = a[key + "es"] = i;
@@ -84,7 +34,7 @@ const ITEM_ALIASES = _.reduce(menu, (a, p) => {
 }, {});
 
 const ITEMS_INTENT = Object.keys(ITEM_ALIASES).join("|");
-const DISHES_INTENT = dishes.join('|');
+const DISHES_INTENT = project.unavailableDishes.join('|');
 const CATEGORY_LIST = Object.keys(CATEGORY_ALIASES).join("|");
 
 intent(
@@ -185,9 +135,9 @@ intent(
             `You can choose from a few different ${value}:`,
             `There are a few types of ${value} (we have|available):`
         );
-        for (let i = 0; i < menu[key].length; i++) {
-            p.play({command: 'highlight', id: menu[key][i].id});
-            p.play((i === menu[key].length - 1 ? "and " : "") + menu[key][i].title);
+        for (let i = 0; i < project.menu[key].length; i++) {
+            p.play({command: 'highlight', id: project.menu[key][i].id});
+            p.play((i === project.menu[key].length - 1 ? "and " : "") + project.menu[key][i].title);
         }
         p.play(`Which ${value} would you like?`);
         p.play({command: 'highlight', id: ''});
