@@ -77,5 +77,5 @@ project.ITEM_ALIASES = _.reduce(project.menu, (a, p) => {
 }, {});
 
 project.ITEMS_INTENT = Object.keys(project.ITEM_ALIASES).join('|');
-project.DISHES_INTENT = project.unavailableDishes.join('|');
+project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.join('|');
 project.CATEGORY_LIST = Object.keys(project.CATEGORY_ALIASES).join('|');

@@ -9,36 +9,58 @@ Now there are four categories for food: drinks, pizza, street food, desserts.
 //////////////////////
 // +add items to order
 //////////////////////
-intent("(Add|I want|do you have|order) $(F p:DISHES_INTENT)", p => {
-    p.play(`Unfortunately you can't add ${p.F} to your order. But we can offer it in our restaurant.`);
-});
+const ADD_ITEMS_SENTENCE_START_ARRAY = [
+    "Add",
+    "I want",
+    "I want to have",
+    "Get me",
+    "Order",
+    "I'll take",
+    "I will take",
+    "I'd like",
+    "I would like",
+    "I'll get",
+    "I will get",
+    "I'll have",
+    "I will have"
+];
+
+const ADD_ITEMS_SENTENCE_START_INTENT = ADD_ITEMS_SENTENCE_START_ARRAY.join('|') + '|' + 'and|';
 
 intent(
-    `(Add|I want|order|get|and|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(ITEM p:ITEMS_INTENT) (and|)  $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|)  $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(ITEM p:ITEMS_INTENT) (and|)  $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|and|) $(ITEM p:ITEMS_INTENT)`,
+    "Do you have (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)",
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)`,
+    p => {
+        p.play(`Unfortunately you can't add ${p.DISH} to your order. But we can offer it in our restaurant.`);
+    }
+);
+
+intent(
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 0)
 );
 
 intent(
-    `(Add|I want|order|get me|) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(Add|I want|order|get me|) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 1)
 );
 
 intent(
-    `(Add|I want|order|get me|) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 2)
 );
 
 intent(
-    `(Add|I want|order|get me|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) $(ITEM p:ITEMS_INTENT) (and|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 0, [0, -1, 1])
 );
 
@@ -103,7 +125,7 @@ function addItems(p, items, shift, pos = []) {
 // +add category
 ////////////////
 let getProduct = context(() => {
-    intent(`(Add|I want|order|get me|and|) $(ITEM p:ITEMS_INTENT)`, p => {
+    intent("(Add|I want|order|get me|and|) $(ITEM p:ITEMS_INTENT)", p => {
         return p.resolve(p.ITEM.value);
     });
 });
@@ -140,7 +162,7 @@ intent(
 /////////////////
 // +replace items
 /////////////////
-intent(`Change (one of|) the $(ITEM p:ITEMS_INTENT) (to|by) (a|) $(ITEM p:ITEMS_INTENT)`, p => {
+intent("Change (one of|) the $(ITEM p:ITEMS_INTENT) (to|by) (a|) $(ITEM p:ITEMS_INTENT)", p => {
     if (p.ITEM_ && p.ITEM_.length !== 2) {
         p.play("Sorry, you should provide exactly two items in this request.");
         return;
@@ -189,8 +211,8 @@ intent(`Change (one of|) the $(ITEM p:ITEMS_INTENT) (to|by) (a|) $(ITEM p:ITEMS_
 // +remove items
 /////////////////
 intent(
-    `(Remove|delete|exclude) $(ITEM p:ITEMS_INTENT)`,
-    `(Remove|delete|exclude) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    "(Remove|delete|exclude) $(ITEM p:ITEMS_INTENT)",
+    "(Remove|delete|exclude) $(NUMBER) $(ITEM p:ITEMS_INTENT)",
     p => {
         let order = p.visual.order || {};
         let id = project.ITEM_ALIASES[p.ITEM.value.toLowerCase()].id;
@@ -255,8 +277,8 @@ intent(
 );
 
 intent(
-    `(How much|what) does (the|) $(ITEM p:ITEMS_INTENT) cost`,
-    `How much is $(ITEM p:ITEMS_INTENT)`,
+    "(How much|what) does (the|) $(ITEM p:ITEMS_INTENT) cost",
+    "How much is $(ITEM p:ITEMS_INTENT)",
     p => {
         let order = p.visual.order || {};
         let price = project.ITEM_ALIASES[p.ITEM.value.toLowerCase()].price;
