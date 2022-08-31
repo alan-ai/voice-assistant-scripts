@@ -91,18 +91,6 @@ project.ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
     return a;
 }, {});
 
-project.ITEM_ALIASES = _.reduce(project.menu, (a, p) => {
-    p.forEach(i => {
-        let key = i.title.toLowerCase();
-        a[key] = a[key + "s"] = a[key + "es"] = i;
-        if (i.alt) {
-            i.alt.forEach(s => a[s.toLowerCase()] = a[s.toLowerCase() + "s"] = a[s.toLowerCase() + "es"] = i)
-        }
-    });
-    return a;
-}, {});
-
-// project.ITEMS_INTENT = Object.keys(project.ITEM_ALIASES).join('|');
 project.ITEMS_INTENT = project.AVAILABLE_ITEMS_INTENT + '|' + project.UNAVAILABLE_DISHES_INTENT;
 project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.join('|');
 project.CATEGORY_LIST = Object.keys(project.CATEGORY_ALIASES).join('|');
