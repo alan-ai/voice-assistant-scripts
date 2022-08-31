@@ -35,10 +35,7 @@ project.menu = {
 
 const AVAILABLE_ITEMS = _.reduce(project.menu, (a, category) => {
     category.forEach(item => {
-        if (!a[item.id]) {
-            a[item.id] = [];
-        }
-        a[item.id].push(item.title.toLowerCase());
+        a[item.id] = [item.title.toLowerCase()];
         if (item.alt) {
             item.alt.forEach(alt => a[item.id].push(alt.toLowerCase()))
         }
