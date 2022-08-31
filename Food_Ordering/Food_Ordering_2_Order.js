@@ -19,6 +19,7 @@ const ADD_ITEMS_SENTENCE_START_ARRAY = [
     "I will take",
     "I'd like",
     "I would like",
+    "I would like to order",
     "I'll get",
     "I will get",
     "I'll have",
@@ -82,26 +83,26 @@ intent(
 
 function addItems(p, items, shift) {
     let answer = "";
+    let foundItemsCounter = 0;
     let lastId, lastName;
     for (let i = 0; i < items.length; i++) {
         let id, name;
-        if (items[i].value) {
-            id = project.ITEM_ALIASES[items[i].value.toLowerCase()].id;
+        if (items[i].value && items[i].label) {
+            if (items[i].label !== 'unavailable' && items[i].label !== 'category') {
+                id = items[i].label;
+            }
             name = items[i].value.toLowerCase();
             if (!id) {
-                if (!_.isEmpty(answer)) {
-                    p.play(answer);
-                }
                 p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
-                return;
             } else {
+                foundItemsCounter++;
                 let number = p.NUMBER_ && p.NUMBER_[i - shift] ? Math.ceil(p.NUMBER_[i - shift].number) : 1;
                 if (number > 99) {
                     number = 1;
                     p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
                 }
                 p.play({command: 'addToCart', item: id, quantity: number});
-                answer += i > 0 ? " and " : "Added ";
+                answer += foundItemsCounter > 1 ? " and " : "Added ";
                 answer += `${number} ${items[i].value} `;
                 if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
                     answer += number > 1 ? "pizzas " : "pizza ";
@@ -111,11 +112,13 @@ function addItems(p, items, shift) {
             }
         }
     }
-    answer += "to your order.";
-    p.state.lastId = lastId;
-    p.state.lastName = lastName;
-    p.play({command: 'navigation', route: '/cart'});
-    p.play(answer);
+    if (answer !== "") {
+        answer += "to your order.";
+        p.state.lastId = lastId;
+        p.state.lastName = lastName;
+        p.play({command: 'navigation', route: '/cart'});
+        p.play(answer);
+    }
 }
 //////////////////////
 // -add items to order
@@ -126,7 +129,7 @@ function addItems(p, items, shift) {
 ////////////////
 let getProduct = context(() => {
     intent("(Add|I want|order|get me|and|) $(ITEM p:ITEMS_INTENT)", p => {
-        return p.resolve(p.ITEM.value);
+        return p.resolve(p.ITEM);
     });
 });
 
@@ -151,7 +154,7 @@ intent(
         p.play({command: 'highlight', id: ''});
         if (p.NUMBER) {
             let product = await p.then(getProduct);
-            let items = [{value: product}];
+            let items = [product];
             addItems(p, items, 0);
         }
     }
@@ -168,15 +171,21 @@ intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a
         p.play("(Sorry,|) you should provide two exact item names in your request");
         return;
     }
-    let delId = project.ITEM_ALIASES[p.ITEM_[0].value.toLowerCase()].id;
+    let delId;
+    if (p.ITEM_[0].label !== 'unavailable' && p.ITEM_[0].label !== 'category') {
+        delId = p.ITEM_[0].label;
+    }
     if (!delId) {
-        p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0]} in the menu.`);
+        p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0].value} in the menu.`);
     } else {
-        let addId = project.ITEM_ALIASES[p.ITEM_[1].value.toLowerCase()].id;
+        let addId;
+        if (p.ITEM_[1].label !== 'unavailable' && p.ITEM_[1].label !== 'category') {
+            addId = p.ITEM_[1].label;
+        }
         let delName = p.ITEM_[0].value.toLowerCase();
         let addName = p.ITEM_[1].value.toLowerCase();
         if (!addId) {
-            p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[1]} in the menu.`);
+            p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[1].value} in the menu.`);
         } else {
             p.state.lastId = addId;
             p.state.lastName = addName;
@@ -193,13 +202,13 @@ intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a
             let ans = '';
             let order = p.visual.order || {};
             if (!order[delId]) {
-                ans = `${p.ITEM_[0]} has not been ordered yet, `;
+                ans = `${p.ITEM_[0].value} has not been ordered yet, `;
             } else {
                 p.play({command: 'removeFromCart', item: delId, quantity: delNumber});
-                ans = `Removed ${delNumber} ${p.ITEM_[0]} ${postfix_del} and `;
+                ans = `Removed ${delNumber} ${p.ITEM_[0].value} ${postfix_del} and `;
             }
             p.play({command: 'addToCart', item: addId, quantity: number_add});
-            p.play(ans + ` added ${number_add} ${p.ITEM_[1]} ${postfix_add}.`);
+            p.play(ans + ` added ${number_add} ${p.ITEM_[1].value} ${postfix_add}.`);
         }
     }
     p.play({command: 'navigation', route: '/cart'});
@@ -216,19 +225,22 @@ intent(
     "(Remove|delete|exclude) $(NUMBER) $(ITEM p:ITEMS_INTENT) (from my order|from the order|from the list|)",
     p => {
         let order = p.visual.order || {};
-        let id = project.ITEM_ALIASES[p.ITEM.value.toLowerCase()].id;
+        let id;
+        if (p.ITEM.label !== 'unavailable' && p.ITEM.label !== 'category') {
+            id = p.ITEM.label;
+        }
         if (!order[id]) {
-            p.play(`${p.ITEM} has not been ordered yet`);
+            p.play(`${p.ITEM.value} has not been ordered yet`);
         } else {
             let quantity = order[id] ? order[id].quantity : 0;
             let deteleQnty = p.NUMBER ? Math.ceil(p.NUMBER.number) : quantity;
+            p.play({command: 'removeFromCart', item: id, quantity: deteleQnty});
+            p.play({command: 'navigation', route: '/cart'});
             if (quantity - deteleQnty <= 0) {
                 p.play('Removed all ' + p.ITEM.value);
             } else {
-                p.play(`Updated ${p.ITEM} quantity to ${quantity - deteleQnty}`);
+                p.play(`Updated ${p.ITEM.value} quantity to ${quantity - deteleQnty}`);
             }
-            p.play({command: 'removeFromCart', item: id, quantity: deteleQnty});
-            p.play({command: 'navigation', route: '/cart'});
         }
     }
 );
@@ -286,12 +298,20 @@ intent(
 
 intent(
     "(How much|What) does (the|) $(ITEM p:ITEMS_INTENT) cost",
-    "(How much is|What is the price of) $(ITEM p:ITEMS_INTENT)",
+    "(How much is|What is the price of) (the|) $(ITEM p:ITEMS_INTENT)",
     p => {
-        let order = p.visual.order || {};
-        let price = project.ITEM_ALIASES[p.ITEM.value.toLowerCase()].price;
-        let s = price !== 1 ? "s" : "";
-        p.play(`${p.ITEM} (costs|is) ${price} dollar${s}`);
+        switch (p.ITEM.label) {
+            case 'unavailable':
+                p.play(`(Sorry,|) I don't know the price of ${p.ITEM.value}`);
+                break;
+            case 'category':
+                p.play(`(Sorry,|) I don't know the generic price of the ${p.ITEM.value}. Please specify a dish.`);
+                break;
+            default:
+                let price = project.AVAILABLE_ITEMS_BY_ID[p.ITEM.label].price;
+                let s = price !== 1 ? "s" : "";
+                p.play(`${p.ITEM.value} (costs|is) ${price} dollar${s}`);
+        }
     }
 );
 /////////////////

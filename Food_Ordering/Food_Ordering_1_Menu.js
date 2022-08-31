@@ -33,6 +33,26 @@ project.menu = {
     ]
 };
 
+project.AVAILABLE_ITEMS_BY_ID = _.reduce(project.menu, (a, category) => {
+    category.forEach(item => a[item.id] = item);
+    return a;
+}, {});
+
+project.AVAILABLE_ITEMS = _.reduce(project.menu, (a, category) => {
+    category.forEach(item => {
+        if (!a[item.id]) {
+            a[item.id] = [];
+        }
+        a[item.id].push(item.title.toLowerCase());
+        if (item.alt) {
+            item.alt.forEach(alt => a[item.id].push(alt.toLowerCase()))
+        }
+    });
+    return a;
+}, {});
+
+project.AVAILABLE_ITEMS_INTENT = _.flatten(Object.keys(project.AVAILABLE_ITEMS).map(id => project.AVAILABLE_ITEMS[id].map(alt => alt + '_' + '~' + id))).join('|');
+
 project.unavailableDishes = [
     "Spaghetti",
     "Bruschetta",
@@ -53,6 +73,8 @@ project.unavailableDishes = [
     "Hamburger",
     "ice cream",
 ];
+
+project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.map(dish => dish.toLowerCase() + '_' + '~' + 'unavailable').join('|');
 
 //TODO proper aliases
 project.CATEGORY_ALIASES = _.reduce(Object.keys(project.menu), (a, p) => {
@@ -80,6 +102,7 @@ project.ITEM_ALIASES = _.reduce(project.menu, (a, p) => {
     return a;
 }, {});
 
-project.ITEMS_INTENT = Object.keys(project.ITEM_ALIASES).join('|');
+// project.ITEMS_INTENT = Object.keys(project.ITEM_ALIASES).join('|');
+project.ITEMS_INTENT = project.AVAILABLE_ITEMS_INTENT + '|' + project.UNAVAILABLE_DISHES_INTENT;
 project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.join('|');
 project.CATEGORY_LIST = Object.keys(project.CATEGORY_ALIASES).join('|');
