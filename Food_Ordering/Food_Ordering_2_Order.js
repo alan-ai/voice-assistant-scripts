@@ -138,7 +138,8 @@ let getProduct = context(() => {
 });
 
 intent(
-    "What $(CAT p:CATEGORY_LIST) do you have",
+    "What (kind of|) $(CAT p:CATEGORY_LIST) do you have",
+    "What (kind|kinds) of $(CAT p:CATEGORY_LIST)",
     "(Order|get me|add|) $(NUMBER) $(CAT p:CATEGORY_LIST)",
     async p => {
         let key = project.CATEGORY_ALIASES[p.CAT.value.toLowerCase()];
