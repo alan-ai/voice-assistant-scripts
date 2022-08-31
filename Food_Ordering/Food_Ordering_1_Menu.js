@@ -54,9 +54,13 @@ project.unavailableDishes = [
     "ice cream",
 ];
 
+//TODO proper aliases
 project.CATEGORY_ALIASES = _.reduce(Object.keys(project.menu), (a, p) => {
     const key = p.toLowerCase();
     a[key] = a[key + "s"] = a[key + "es"] = key;
+    if (key === 'street food') {
+        a['fast food'] = a['fast foods'] = 'street food'
+    }
     return a;
 }, {});
 
