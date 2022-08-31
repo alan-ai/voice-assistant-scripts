@@ -22,9 +22,10 @@ intent(
     }
 );
 
-intent(`(open|what do you have in|choose|select|go to|navigate|show me|take me to|what is on the menu in|) (the|) $(ITEM ${project.CATEGORY_LIST}) (menu|)`, p => {
-    p.play({command: 'navigation', route: `/menu/${project.CATEGORY_ALIASES[p.ITEM.toLowerCase()]}`});
-    p.play(`Opening the ${p.ITEM} menu`);
+intent(`(open|what do you have in|choose|select|go to|navigate|show|show me|take me to|what is on the menu in|) (the|) $(ITEM p:CATEGORY_LIST) (menu|)`, p => {
+    let category = project.CATEGORY_ALIASES[p.ITEM.toLowerCase()]
+    p.play({command: 'navigation', route: `/menu/${category}`});
+    p.play(`Opening the ${category} menu`);
 });
 
 intent("(open|go|navigate|show|take) (me|) (to|) (the|my|) (cart|order)", p => {
