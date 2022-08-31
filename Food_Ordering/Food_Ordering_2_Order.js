@@ -33,7 +33,12 @@ intent(
     "Do you have (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)",
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)`,
     p => {
-        p.play(`Unfortunately you can't add ${p.DISH} to your order. But (you can get|we serve) it in our restaurant.`);
+        
+        p.play(
+            `Sorry, ${p.DISH} is not on the menu.`,
+            `Sorry, we don't have it`,
+            `Sorry, we don't have ${p.DISH}`
+        );
     }
 );
 
