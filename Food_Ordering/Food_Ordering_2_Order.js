@@ -22,7 +22,9 @@ const ADD_ITEMS_SENTENCE_START_ARRAY = [
     "I'll get",
     "I will get",
     "I'll have",
-    "I will have"
+    "I will have",
+    "Let me have",
+    "Let me get",
 ];
 
 const ADD_ITEMS_SENTENCE_START_INTENT = ADD_ITEMS_SENTENCE_START_ARRAY.join('|') + '|' + 'and|';
@@ -31,7 +33,7 @@ intent(
     "Do you have (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)",
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)`,
     p => {
-        p.play(`Unfortunately you can't add ${p.DISH} to your order. But we can offer it in our restaurant.`);
+        p.play(`Unfortunately you can't add ${p.DISH} to your order. But (you can get|we serve) it in our restaurant.`);
     }
 );
 
@@ -65,8 +67,8 @@ intent(
 );
 
 intent(
-    "Add (another|) $(NUMBER) more",
-    "Add another (one|)",
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (another|) $(NUMBER) more`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) another (one|)`,
     p => {
         if (p.state.lastId) {
             let number = p.NUMBER && p.NUMBER.number > 0 ? p.NUMBER.number : 1;
@@ -92,7 +94,7 @@ function addItems(p, items, shift, pos = []) {
             if (!_.isEmpty(answer)) {
                 p.play(answer);
             }
-            p.play(`(Sorry,|) I can't find ${items[i].value} in the menu.`);
+            p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
             return;
         } else {
             let number = p.NUMBERs && p.NUMBERs[i - shift] ? p.NUMBERs[i - shift].number : 1;
@@ -169,13 +171,13 @@ intent("Change (one of|) the $(ITEM p:ITEMS_INTENT) (to|by) (a|) $(ITEM p:ITEMS_
     }
     let delId = project.ITEM_ALIASES[p.ITEM_[0].value.toLowerCase()].id;
     if (!delId) {
-        p.play(`Can't find ${p.ITEM_[0]} in the menu`);
+        p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0]} in the menu.`);
     } else {
         let addId = project.ITEM_ALIASES[p.ITEM_[1].value.toLowerCase()].id;
         let delName = p.ITEM_[0].value.toLowerCase();
         let addName = p.ITEM_[1].value.toLowerCase();
         if (!addId) {
-            p.play(`Can't find ${p.ITEM_[1]} in the menu.`);
+            p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[1]} in the menu.`);
         } else {
             p.state.lastId = addId;
             p.state.lastName = addName;
