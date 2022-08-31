@@ -92,4 +92,3 @@ project.ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
 }, {});
 
 project.ITEMS_INTENT = project.AVAILABLE_ITEMS_INTENT + '|' + project.UNAVAILABLE_DISHES_INTENT;
-project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.join('|');
