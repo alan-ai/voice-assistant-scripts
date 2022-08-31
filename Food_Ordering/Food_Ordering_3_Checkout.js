@@ -25,13 +25,19 @@ intent("Finish (order|)", p => {
 
 let playDelivery = function (p, address, date, time) {
     if (!address) {
-        p.play("What is delivery address?");
+        p.play("What is the delivery address?");
     } else if (!time) {
         p.play({command: 'highlight', id: 'time'});
-        p.play("What is delivery time?");
+        p.play(
+            "What is the delivery time?",
+            "When should we deliver?"
+        );
     } else if (!date) {
         p.play({command: 'highlight', id: 'date'});
-        p.play("What is delivery date?");
+        p.play(
+            "What is the delivery date?",
+            "And the date?"
+        );
     } else {
         p.play({command: 'navigation', route: '/cart'});
         p.play(`OK, your order will be delivered to ${address}. Do you want to confirm your order?`);
@@ -83,7 +89,7 @@ let checkout = context(() => {
         }
     );
 
-    intent("Back (to order|)", p => {
+    intent("Back (to the order|to the cart|)", p => {
         p.play({command: 'navigation', route: '/cart'});
         p.play("OK");
         p.resolve(null)
@@ -142,11 +148,12 @@ let confirm = context(() => {
     });
 
     intent(
-        "(No|change|invalid|nope|not correct|stop|back)",
-        "(Need|can you|please) (fix|change|update) (delivery|) (address|time|date)",
+        "(No|nope|stop|back|go back|return)",
+        "(It is|) (not valid|invalid|not correct)",
+        "(I|) (need to|should|can you|can I|please|) (fix|change|update|edit|alter) (my|the|) (delivery|) (address|time|date|details|order)",
         p => {
             p.play({command: 'navigation', route: '/cart'});
-            p.play("OK, please (make neccessary corrections|update an order|fix what you want).");
+            p.play("OK, please review and (set|change|edit|update|alter) your (delivery|) details.");
             p.resolve(null);
         }
     );
@@ -156,8 +163,8 @@ let confirm = context(() => {
 
 // set address
 intent(
-    "(Set|change|replace) (delivery|) address",
-    "(Delivery|) address is (not correct|invalid)",
+    "(Let's|) (set|change|replace|update|alter) (the|) (delivery|) address",
+    "(The|) (delivery|) address is (not correct|invalid|wrong)",
     p => {
         if (_.isEmpty(p.visual.order)) {
             p.play("Please, add something to your order first.");
@@ -208,8 +215,8 @@ intent(COMPOUND_DELIVERY_INTENT, p => {
 
 // set date/time
 intent(
-    "(Let's|) (set|choose|select|change) (delivery|) (time|date)",
-    "(Delivery|) (date|time) is (not correct|invalid)",
+    "(Let's|) (set|change|replace|update|alter) (the|) (delivery|) (time|date)",
+    "(The|) (delivery|) (date|time) is (not correct|invalid|wrong)",
     p => {
         if (_.isEmpty(p.visual.order)) {
             p.play("Please, add something to your order first.");
@@ -228,6 +235,9 @@ intent(
     p => {
         p.play({command: 'address', address: p.LOC.value});
         p.play({command: 'highlight', id: 'address'});
-        p.play(`Delivery address is set to ${p.LOC}`);
+        p.play(
+            `The delivery address is ${p.LOC}`,
+            `We will deliver your order to ${p.LOC}`
+        );
     }
 );

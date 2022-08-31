@@ -243,10 +243,14 @@ intent(
     }
 );
 
-intent("(Clear|remove|empty|cancel) order", p => {
-    p.play({command: 'clearOrder', route: 'cleared-order'});
-    p.play("Your order has been canceled");
-});
+intent(
+    "(clear|remove|empty|cancel) (everything|all items|) (from|) (the|my|) (order|cart)",
+    "(remove|delete|undo) (everything|all items|my order)",
+    p => {
+        p.play({command: 'clearOrder', route: 'cleared-order'});
+        p.play("Your order has been canceled");
+    }
+);
 /////////////////
 // -remove items
 /////////////////
@@ -254,26 +258,29 @@ intent("(Clear|remove|empty|cancel) order", p => {
 /////////////////
 // +order details
 /////////////////
-intent("(My order|order details|details)", p => {
-    let order = p.visual.order;
-    if (_.isEmpty(order)) {
-        p.play(
-            "You have not ordered anything yet.",
-            "Your cart is empty."
-        );
-        return;
-    }
-    p.play("You have ordered:");
-    for (let product in order) {
-        if (order.hasOwnProperty(product)) {
-            p.play(" " + order[product].quantity + " " + order[product].title);
+intent(
+    "What (is|are|do I have) (in|) (the cart|my order|order details|details)",
+    "What (have|did) I (order|add|ordered|added|put) (to the cart|)?",
+    p => {
+        let order = p.visual.order;
+        if (_.isEmpty(order)) {
+            p.play(
+                "You have not ordered anything yet.",
+                "Your cart is empty."
+            );
+            return;
         }
-    }
-});
+        p.play("You have ordered:");
+        for (let product in order) {
+            if (order.hasOwnProperty(product)) {
+                p.play(" " + order[product].quantity + " " + order[product].title);
+            }
+        }
+    });
 
 intent(
-    "What is the total (price|amount) (of the order|for my order|)",
-    "How much is my order",
+    "What is the total (price|amount|) (of the order|for my order|)",
+    "How much (is my order|do I owe|should I pay)",
     p => {
         if (p.visual.total && p.visual.total > 0) {
             p.play("The total amount for your order is:");
@@ -288,8 +295,8 @@ intent(
 );
 
 intent(
-    "(How much|what) does (the|) $(ITEM p:ITEMS_INTENT) cost",
-    "How much is $(ITEM p:ITEMS_INTENT)",
+    "(How much|What) does (the|) $(ITEM p:ITEMS_INTENT) cost",
+    "(How much is|What is the price of) $(ITEM p:ITEMS_INTENT)",
     p => {
         let order = p.visual.order || {};
         let price = project.ITEM_ALIASES[p.ITEM.value.toLowerCase()].price;

@@ -22,25 +22,28 @@ intent(
     }
 );
 
-intent(`(Open|choose|select|) $(ITEM ${project.CATEGORY_LIST})`, p => {
+intent(`(open|what do you have in|choose|select|go to|navigate|show me|take me to|what is on the menu in|) (the|) $(ITEM ${project.CATEGORY_LIST}) (menu|)`, p => {
     p.play({command: 'navigation', route: `/menu/${project.CATEGORY_ALIASES[p.ITEM.toLowerCase()]}`});
-    p.play(`Opening ${p.ITEM} menu`);
+    p.play(`Opening the ${p.ITEM} menu`);
 });
 
-intent("Open cart", p => {
+intent("(open|go|navigate|show|take) (me|) (to|) (the|my|) (cart|order)", p => {
     p.play({command: 'navigation', route: '/cart'});
-    p.play("Here is your cart");
+    p.play("Here is your (cart|order)");
 });
 
-intent("Open menu", p => {
+intent("(open|go|navigate|show|take) (me|) (to|) (the|) (menu|items list)", p => {
     p.play({command: 'navigation', route: '/menu'});
-    p.play("Look at our menu");
+    p.play(
+        "(Take|Have) a look at our menu",
+        "Here is our menu"
+    );
 });
 
-intent("Scroll down", p => {
+intent("(Scroll|Go) down", p => {
     p.play({command: 'scroll', direction: 'down'});
 });
 
-intent("Scroll up", p => {
+intent("(Scroll|Go) up", p => {
     p.play({command: 'scroll', direction: 'up'});
 });
