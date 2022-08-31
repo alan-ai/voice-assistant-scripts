@@ -9,7 +9,7 @@ Now there are four categories for food: drinks, pizza, street food, desserts.
 project.menu = {
     "drink": [
         {id: "sod", title: "Cola", price: 2, type: "drink", alt: ["Coca-cola", "Soda", "Coca cola", "Coke", "Diet Coke"]},
-        {id: "amr", title: "Americano", price: 1, type: "drink"},
+        {id: "amr", title: "Americano", price: 1, type: "drink", alt: ["coffee"]},
         {id: "lat", title: "Latte", price: 3, type: "drink"},
         {id: "cap", title: "Cappuccino", price: 3, type: "drink"},
         {id: "orj", title: "Orange juice", price: 3, type: "drink"},
@@ -28,7 +28,7 @@ project.menu = {
         {id: "snd", title: "Sandwich", price: 10, type: "street food"}
     ],
     "dessert": [
-        {id: "apl", title: "Apple pie", price: 5, type: "dessert"},
+        {id: "apl", title: "Apple pie", price: 5, type: "dessert", alt: ["pie"]},
         {id: "chc", title: "Cheesecake", price: 15, type: "dessert"}
     ]
 };
