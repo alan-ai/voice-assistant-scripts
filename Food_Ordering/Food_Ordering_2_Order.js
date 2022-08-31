@@ -218,8 +218,8 @@ intent("(Change|Replace|Add) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with
 // +remove items
 /////////////////
 intent(
-    "(Remove|delete|exclude) $(ITEM p:ITEMS_INTENT)",
-    "(Remove|delete|exclude) $(NUMBER) $(ITEM p:ITEMS_INTENT)",
+    "(Remove|delete|exclude) $(ITEM p:ITEMS_INTENT) (from my order|from the order|from the list|)",
+    "(Remove|delete|exclude) $(NUMBER) $(ITEM p:ITEMS_INTENT) (from my order|from the order|from the list|)",
     p => {
         let order = p.visual.order || {};
         let id = project.ITEM_ALIASES[p.ITEM.value.toLowerCase()].id;
