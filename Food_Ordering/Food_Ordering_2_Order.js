@@ -221,7 +221,7 @@ intent(
             p.play(`${p.ITEM} has not been ordered yet`);
         } else {
             let quantity = order[id] ? order[id].quantity : 0;
-            let deteleQnty = p.NUMBER ? p.NUMBER.number : quantity;
+            let deteleQnty = p.NUMBER ? Math.ceil(p.NUMBER.number) : quantity;
             if (quantity - deteleQnty <= 0) {
                 p.play('Removed all ' + p.ITEM.value);
             } else {
