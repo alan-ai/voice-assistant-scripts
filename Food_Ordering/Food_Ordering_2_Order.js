@@ -31,19 +31,6 @@ const ADD_ITEMS_SENTENCE_START_ARRAY = [
 const ADD_ITEMS_SENTENCE_START_INTENT = ADD_ITEMS_SENTENCE_START_ARRAY.join('|') + '|' + 'and|';
 
 intent(
-    "Do you have (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)",
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)`,
-    p => {
-
-        p.play(
-            `Sorry, ${p.DISH} is not on the menu.`,
-            `Sorry, we don't have it`,
-            `Sorry, we don't have ${p.DISH}`
-        );
-    }
-);
-
-intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
@@ -136,19 +123,20 @@ let getProduct = context(() => {
 intent(
     "What (kind of|) $(CAT p:CATEGORY_LIST) do you have",
     "What (kind|kinds) of $(CAT p:CATEGORY_LIST)",
-    "(Order|get me|add|) $(NUMBER) $(CAT p:CATEGORY_LIST)",
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(NUMBER) $(CAT p:CATEGORY_LIST)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(CAT p:CATEGORY_LIST)`,
     async p => {
-        let key = project.CATEGORY_ALIASES[p.CAT.value.toLowerCase()];
-        let value = p.CAT.endsWith('s') ? p.CAT.value : p.CAT.value + "s";
-        p.play({command: 'navigation', route: `/menu/${key}`});
+        let category = p.CAT.label
+        let value = p.CAT.value.endsWith('s') ? p.CAT.value : p.CAT.value + "s";
+        p.play({command: 'navigation', route: `/menu/${category}`});
         p.play(
             `We have (a few|several) ${value} available:`,
             `You can choose from a few different ${value}:`,
             `(There are|We have) a few types of ${value} (on the menu|available):`
         );
-        for (let i = 0; i < project.menu[key].length; i++) {
-            p.play({command: 'highlight', id: project.menu[key][i].id});
-            p.play((i === project.menu[key].length - 1 ? "and " : "") + project.menu[key][i].title);
+        for (let i = 0; i < project.menu[category].length; i++) {
+            p.play({command: 'highlight', id: project.menu[category][i].id});
+            p.play((i === project.menu[category].length - 1 ? "and " : "") + project.menu[category][i].title);
         }
         p.play(`Which ${value} would you like?`);
         p.play({command: 'highlight', id: ''});

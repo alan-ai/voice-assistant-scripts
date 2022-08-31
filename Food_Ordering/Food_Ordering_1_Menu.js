@@ -33,12 +33,7 @@ project.menu = {
     ]
 };
 
-project.AVAILABLE_ITEMS_BY_ID = _.reduce(project.menu, (a, category) => {
-    category.forEach(item => a[item.id] = item);
-    return a;
-}, {});
-
-project.AVAILABLE_ITEMS = _.reduce(project.menu, (a, category) => {
+const AVAILABLE_ITEMS = _.reduce(project.menu, (a, category) => {
     category.forEach(item => {
         if (!a[item.id]) {
             a[item.id] = [];
@@ -51,7 +46,12 @@ project.AVAILABLE_ITEMS = _.reduce(project.menu, (a, category) => {
     return a;
 }, {});
 
-project.AVAILABLE_ITEMS_INTENT = _.flatten(Object.keys(project.AVAILABLE_ITEMS).map(id => project.AVAILABLE_ITEMS[id].map(alt => alt + '_' + '~' + id))).join('|');
+project.AVAILABLE_ITEMS_INTENT = _.flatten(Object.keys(AVAILABLE_ITEMS).map(id => AVAILABLE_ITEMS[id].map(alt => alt + '_' + '~' + id))).join('|');
+
+project.AVAILABLE_ITEMS_BY_ID = _.reduce(project.menu, (a, category) => {
+    category.forEach(item => a[item.id] = item);
+    return a;
+}, {});
 
 project.unavailableDishes = [
     "Spaghetti",
@@ -76,15 +76,15 @@ project.unavailableDishes = [
 
 project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.map(dish => dish.toLowerCase() + '_' + '~' + 'unavailable').join('|');
 
-//TODO proper aliases
-project.CATEGORY_ALIASES = _.reduce(Object.keys(project.menu), (a, p) => {
-    const key = p.toLowerCase();
-    a[key] = a[key + "s"] = a[key + "es"] = key;
-    if (key === 'street food') {
-        a['fast food'] = a['fast foods'] = 'street food'
-    }
-    return a;
-}, {});
+const CATEGORY_ALIASES = {
+    "drink" : ["drink"],
+    "pizza": ["pizza"],
+    "street food": ["street food", "fast food"],
+    "dessert": ["dessert"]
+}
+
+//TODO get categories from the menu and augment them with aliases later
+project.CATEGORY_LIST = _.flatten(Object.keys(CATEGORY_ALIASES).map(category => CATEGORY_ALIASES[category].map(alt => alt + '_' + '~' + category))).join('|');
 
 project.ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
     p.forEach(i => a[i.id] = i.type);
@@ -93,4 +93,3 @@ project.ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
 
 project.ITEMS_INTENT = project.AVAILABLE_ITEMS_INTENT + '|' + project.UNAVAILABLE_DISHES_INTENT;
 project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.join('|');
-project.CATEGORY_LIST = Object.keys(project.CATEGORY_ALIASES).join('|');
