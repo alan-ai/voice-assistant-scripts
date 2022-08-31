@@ -33,7 +33,7 @@ intent(
     "Do you have (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)",
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(DISH p:UNAVAILABLE_DISHES_INTENT)`,
     p => {
-        
+
         p.play(
             `Sorry, ${p.DISH} is not on the menu.`,
             `Sorry, we don't have it`,
@@ -44,31 +44,17 @@ intent(
 
 intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    p => addItems(p, p.ITEM_, 0)
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT|)`,
+    p => {
+        addItems(p, p.ITEM_, 0);
+    }
 );
 
 intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 1)
-);
-
-intent(
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    p => addItems(p, p.ITEM_, 2)
-);
-
-intent(
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    p => addItems(p, p.ITEM_, 0, [0, -1, 1])
 );
 
 intent(
@@ -76,7 +62,7 @@ intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) another (one|)`,
     p => {
         if (p.state.lastId && p.state.lastName) {
-            let number = p.NUMBER && p.NUMBER.number > 0 ? p.NUMBER.number : 1;
+            let number = p.NUMBER && p.NUMBER.number > 0 ? Math.ceil(p.NUMBER.number) : 1;
             if (number > 99) {
                 number = 1;
                 p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
@@ -94,38 +80,40 @@ intent(
     }
 );
 
-function addItems(p, items, shift, pos = []) {
+function addItems(p, items, shift) {
     let answer = "";
-    let id, name;
+    let lastId, lastName;
     for (let i = 0; i < items.length; i++) {
-        id = project.ITEM_ALIASES[items[i].value.toLowerCase()].id;
-        name = items[i].value.toLowerCase();
-        if (!id) {
-            if (!_.isEmpty(answer)) {
-                p.play(answer);
-            }
-            p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
-            return;
-        } else {
-            let number = p.NUMBER_ && p.NUMBER_[i - shift] ? p.NUMBER_[i - shift].number : 1;
-            if (!_.isEmpty(pos)) {
-                number = i < pos.length && pos[i] > -1 ? p.NUMBER_[pos[i]] : 1;
-            }
-            if (number > 99) {
-                number = 1;
-                p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
-            }
-            p.play({command: 'addToCart', item: id, quantity: number});
-            answer += i > 0 ? " and " : "Added ";
-            answer += `${number} ${items[i].value} `;
-            if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
-                answer += number > 1 ? "pizzas " : "pizza ";
+        let id, name;
+        if (items[i].value) {
+            id = project.ITEM_ALIASES[items[i].value.toLowerCase()].id;
+            name = items[i].value.toLowerCase();
+            if (!id) {
+                if (!_.isEmpty(answer)) {
+                    p.play(answer);
+                }
+                p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
+                return;
+            } else {
+                let number = p.NUMBER_ && p.NUMBER_[i - shift] ? Math.ceil(p.NUMBER_[i - shift].number) : 1;
+                if (number > 99) {
+                    number = 1;
+                    p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
+                }
+                p.play({command: 'addToCart', item: id, quantity: number});
+                answer += i > 0 ? " and " : "Added ";
+                answer += `${number} ${items[i].value} `;
+                if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
+                    answer += number > 1 ? "pizzas " : "pizza ";
+                }
+                lastId = id;
+                lastName = name;
             }
         }
     }
     answer += "to your order.";
-    p.state.lastId = id;
-    p.state.lastName = name;
+    p.state.lastId = lastId;
+    p.state.lastName = lastName;
     p.play({command: 'navigation', route: '/cart'});
     p.play(answer);
 }
@@ -175,7 +163,7 @@ intent(
 /////////////////
 // +replace items
 /////////////////
-intent("(Change|Replace|Add) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with|instead of) (a|) $(ITEM p:ITEMS_INTENT)", p => {
+intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a|) $(ITEM p:ITEMS_INTENT)", p => {
     if (p.ITEM_ && p.ITEM_.length !== 2) {
         p.play("(Sorry,|) you should provide two exact item names in your request");
         return;
