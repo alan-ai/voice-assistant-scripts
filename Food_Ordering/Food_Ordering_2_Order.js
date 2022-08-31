@@ -70,16 +70,22 @@ intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (another|) $(NUMBER) more`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) another (one|)`,
     p => {
-        if (p.state.lastId) {
+        if (p.state.lastId && p.state.lastName) {
             let number = p.NUMBER && p.NUMBER.number > 0 ? p.NUMBER.number : 1;
             if (number > 99) {
-                p.play("(Sorry,|) the number is too high.");
-                return;
+                p.play(`(Sorry,|) we don't have that many ${p.state.lastName}`);
+                number = 1;
+                p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
+                p.play(`So I've added ${number} more`);
+            } else {
+                p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
+                p.play(
+                    `Added another ${number} ${p.state.lastName}`,
+                    `Added ${number} more ${p.state.lastName}`
+                );
             }
-            p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
-            p.play(`Added another ${number} ${p.state.lastName}`);
         } else {
-            p.play("Sorry, You should order something first.");
+            p.play("(Sorry,|) You should order something first.");
         }
     }
 );
@@ -97,19 +103,22 @@ function addItems(p, items, shift, pos = []) {
             p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
             return;
         } else {
-            let number = p.NUMBERs && p.NUMBERs[i - shift] ? p.NUMBERs[i - shift].number : 1;
+            let number = p.NUMBER_ && p.NUMBER_[i - shift] ? p.NUMBER_[i - shift].number : 1;
             if (!_.isEmpty(pos)) {
-                number = i < pos.length && pos[i] > -1 ? p.NUMBERs[pos[i]] : 1;
+                number = i < pos.length && pos[i] > -1 ? p.NUMBER_[pos[i]] : 1;
             }
             if (number > 99) {
-                p.play(`(Sorry,|) the quantity of ${items[i].value} is too high.`);
-                return;
-            }
-            p.play({command: 'addToCart', item: id, quantity: number});
-            answer += i > 0 ? " and " : "Added ";
-            answer += `${number} ${items[i].value} `;
-            if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
-                answer += number > 1 ? "pizzas " : "pizza ";
+                p.play(`(Sorry,|) we don't have that many ${items[i].value}`);
+                number = 1;
+                p.play({command: 'addToCart', item: id, quantity: number});
+                p.play(`So I've added ${number}`);
+            } else {
+                p.play({command: 'addToCart', item: id, quantity: number});
+                answer += i > 0 ? " and " : "Added ";
+                answer += `${number} ${items[i].value} `;
+                if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
+                    answer += number > 1 ? "pizzas " : "pizza ";
+                }
             }
         }
     }
@@ -142,7 +151,7 @@ intent(
         p.play(
             `We have (a few|several) ${value} available:`,
             `You can choose from a few different ${value}:`,
-            `There are a few types of ${value} (we have|available):`
+            `(There are|We have) a few types of ${value} (on the menu|available):`
         );
         for (let i = 0; i < project.menu[key].length; i++) {
             p.play({command: 'highlight', id: project.menu[key][i].id});
@@ -164,9 +173,9 @@ intent(
 /////////////////
 // +replace items
 /////////////////
-intent("Change (one of|) the $(ITEM p:ITEMS_INTENT) (to|by) (a|) $(ITEM p:ITEMS_INTENT)", p => {
+intent("(Change|Replace|Add) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with|instead of) (a|) $(ITEM p:ITEMS_INTENT)", p => {
     if (p.ITEM_ && p.ITEM_.length !== 2) {
-        p.play("Sorry, you should provide exactly two items in this request.");
+        p.play("(Sorry,|) you should provide two exact item names in your request");
         return;
     }
     let delId = project.ITEM_ALIASES[p.ITEM_[0].value.toLowerCase()].id;
