@@ -1,3 +1,11 @@
+// {Name: Food_Ordering}
+// {Description: Food Ordering demo app for delivering food}
+
+/*
+This is a script for Food Ordering demo app for delivering food
+Now there are four categories for food: drinks, pizza, street food, desserts.
+*/
+
 intent(
     "That's (all|it)",
     "(Ready to|) checkout",
