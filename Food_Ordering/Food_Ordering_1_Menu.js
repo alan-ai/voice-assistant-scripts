@@ -81,7 +81,7 @@ project.unavailableDishes = [
 const UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.map(dish => dish.toLowerCase() + '_' + '~' + 'unavailable').join('|');
 
 const CATEGORY_ALIASES = {
-    "drink" : ["drink"],
+    "drink" : ["drink", "refresher"],
     "pizza": ["pizza"],
     "street food": ["street food", "fast food"],
     "dessert": ["dessert"]

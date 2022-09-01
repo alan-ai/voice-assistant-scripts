@@ -34,15 +34,15 @@ intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) and (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) and (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) and (a|the|) $(ITEM p:ITEMS_INTENT|)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|some|) $(ITEM p:ITEMS_INTENT) and (a|the|) $(ITEM p:ITEMS_INTENT|)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|some|) $(ITEM p:ITEMS_INTENT)`,
     p => {
         addItems(p, p.ITEM_, 0);
     }
 );
 
 intent(
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) and (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|some|) $(ITEM p:ITEMS_INTENT) and (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 1)
 );
 
