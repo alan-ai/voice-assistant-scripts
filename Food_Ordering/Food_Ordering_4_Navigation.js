@@ -23,7 +23,7 @@ intent(
 );
 
 intent(`(open|what do you have in|choose|select|go to|navigate|show|show me|take me to|what is on the menu in|) (the|) $(ITEM p:CATEGORY_LIST) (menu|)`, p => {
-    let category = p.CAT.label;
+    let category = p.ITEM.label;
     p.play({command: 'navigation', route: `/menu/${category}`});
     p.play(`Opening the ${category} menu`);
 });
