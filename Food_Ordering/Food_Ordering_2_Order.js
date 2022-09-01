@@ -32,16 +32,17 @@ const ADD_ITEMS_SENTENCE_START_INTENT = ADD_ITEMS_SENTENCE_START_ARRAY.join('|')
 
 intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT)`,
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(ITEM p:ITEMS_INTENT|)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) and (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT) and (a|the|) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) and (a|the|) $(ITEM p:ITEMS_INTENT|)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT)`,
     p => {
         addItems(p, p.ITEM_, 0);
     }
 );
 
 intent(
-    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) (and|) (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
+    `(${ADD_ITEMS_SENTENCE_START_INTENT}) (a|the|) $(ITEM p:ITEMS_INTENT) and (a|the|) $(NUMBER) $(ITEM p:ITEMS_INTENT)`,
     p => addItems(p, p.ITEM_, 1)
 );
 
@@ -68,25 +69,81 @@ intent(
     }
 );
 
-function addItems(p, items, shift) {
+//TODO dynamic user scope entity with items only from the category in question
+let ctxClarifyCategoryItem = context(() => {
+    intent(`(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM u:clarifyCategoryItems)`, p => {
+        return p.resolve(p.ITEM);
+    });
+
+    intent(
+        "(No|nope|stop|back|go back|return)",
+        "(It is|) (not valid|invalid|not correct)",
+        "(I|) (don't|do not) want",
+        p => {
+            p.play(`OK, I will not add any ${p.userData.clarifyCategory} to your order.`);
+            p.resolve(null);
+        }
+    );
+
+    fallback(p => {
+        p.play(`What ${p.userData.clarifyCategory ? p.userData.clarifyCategory : ""} would you like?`);
+    });
+});
+
+async function addItems(p, items, shift) {
     let answer = "";
     let foundItemsCounter = 0;
     let lastId, lastName;
     for (let i = 0; i < items.length; i++) {
         let id, name;
+        let number = p.NUMBER_ && p.NUMBER_[i - shift] ? Math.ceil(p.NUMBER_[i - shift].number) : 1;
         if (items[i].value && items[i].label) {
+            name = items[i].value.toLowerCase();
             switch (items[i].label) {
                 case 'unavailable':
-                    p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
+                    p.play(`(Sorry,|) ${items[i].value} is not on the menu.`);
                     break;
                 case 'category':
-                    p.play(`You will need to specify an exact ${items[i].value}.`);
+                    let category = project.utils.findCategory(name);
+                    let pluralizedName = name.endsWith('s') ? name : name + "s";
+                    p.play({command: 'navigation', route: `/menu/${category}`});
+                    p.play(
+                        `We have (a few|several) ${pluralizedName} available:`,
+                        `You can choose from a few different ${pluralizedName}:`,
+                        `(There are|We have) a few types of ${pluralizedName} (on the menu|available):`
+                    );
+                    for (let i = 0; i < project.menu[category].length; i++) {
+                        p.play({command: 'highlight', id: project.menu[category][i].id});
+                        p.play((i === project.menu[category].length - 1 ? "and " : "") + project.menu[category][i].title);
+                    }
+                    p.play({command: 'highlight', id: ''});
+                    p.play(`Which ${pluralizedName} would you like?`);
+                    p.userData.clarifyCategory = category;
+                    p.userData.clarifyCategoryItems.en = project.utils.getCategoryItems(category);
+                    let clarifiedItem = await p.then(ctxClarifyCategoryItem);
+                    p.userData.clarifyCategory = null;
+                    p.userData.clarifyCategoryItems.en = "";
+                    if (clarifiedItem){
+                        let clarifiedName = clarifiedItem.value.toLowerCase();
+                        id = clarifiedItem.label;
+                        foundItemsCounter++;
+                        if (number > 99) {
+                            number = 1;
+                            p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
+                        }
+                        p.play({command: 'addToCart', item: id, quantity: number});
+                        answer += foundItemsCounter > 1 ? " and " : "Added ";
+                        answer += `${number} ${clarifiedName} `;
+                        if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
+                            answer += number > 1 ? "pizzas " : "pizza ";
+                        }
+                        lastId = id;
+                        lastName = clarifiedName;
+                    }
                     break;
                 default:
                     id = items[i].label;
-                    name = items[i].value.toLowerCase();
                     foundItemsCounter++;
-                    let number = p.NUMBER_ && p.NUMBER_[i - shift] ? Math.ceil(p.NUMBER_[i - shift].number) : 1;
                     if (number > 99) {
                         number = 1;
                         p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
@@ -117,12 +174,6 @@ function addItems(p, items, shift) {
 ////////////////
 // +add category
 ////////////////
-let getProduct = context(() => {
-    intent(`(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM p:ITEMS_INTENT)`, p => {
-        return p.resolve(p.ITEM);
-    });
-});
-
 intent(
     "What (kind of|) $(CAT p:CATEGORY_LIST) do you have",
     "What (kind|kinds) of $(CAT p:CATEGORY_LIST)",
@@ -130,24 +181,30 @@ intent(
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(NUMBER) $(CAT p:CATEGORY_LIST)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(CAT p:CATEGORY_LIST)`,
     async p => {
-        let category = p.CAT.label
-        let value = p.CAT.value.endsWith('s') ? p.CAT.value : p.CAT.value + "s";
+        let category = p.CAT.label;
+        let pluralizedName = p.CAT.value.endsWith('s') ? p.CAT.value : p.CAT.value + "s";
         p.play({command: 'navigation', route: `/menu/${category}`});
         p.play(
-            `We have (a few|several) ${value} available:`,
-            `You can choose from a few different ${value}:`,
-            `(There are|We have) a few types of ${value} (on the menu|available):`
+            `We have (a few|several) ${pluralizedName} available:`,
+            `You can choose from a few different ${pluralizedName}:`,
+            `(There are|We have) a few types of ${pluralizedName} (on the menu|available):`
         );
         for (let i = 0; i < project.menu[category].length; i++) {
             p.play({command: 'highlight', id: project.menu[category][i].id});
             p.play((i === project.menu[category].length - 1 ? "and " : "") + project.menu[category][i].title);
         }
-        p.play(`Which ${value} would you like?`);
         p.play({command: 'highlight', id: ''});
+        p.play(`Which ${pluralizedName} would you like?`);
         if (p.NUMBER) {
-            let product = await p.then(getProduct);
-            let items = [product];
-            addItems(p, items, 0);
+            p.userData.clarifyCategory = category;
+            p.userData.clarifyCategoryItems.en = project.utils.getCategoryItems(category);
+            let product = await p.then(ctxClarifyCategoryItem);
+            p.userData.clarifyCategory = null;
+            p.userData.clarifyCategoryItems.en = "";
+            if (product) {
+                let items = [product];
+                addItems(p, items, 0);
+            }
         }
     }
 );

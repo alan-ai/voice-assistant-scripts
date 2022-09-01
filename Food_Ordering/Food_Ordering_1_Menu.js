@@ -6,6 +6,13 @@ This is a script for Food Ordering demo app for delivering food
 Now there are four categories for food: drinks, pizza, street food, desserts.
 */
 
+onCreateUser(p => {
+    p.userData.clarifyCategory = null;
+    p.userData.clarifyCategoryItems = {};
+    p.userData.clarifyCategoryItems.en = "";
+});
+
+
 project.menu = {
     "drink": [
         {id: "sod", title: "Cola", price: 2, type: "drink", alt: ["Coca-cola", "Soda", "Coca cola", "Coke", "Diet Coke"]},
@@ -80,6 +87,27 @@ const CATEGORY_ALIASES = {
     "dessert": ["dessert"]
 }
 
+function findCategory(catAlternative) {
+    for (let category in CATEGORY_ALIASES) {
+        for (let key in CATEGORY_ALIASES[category]) {
+            if (catAlternative.includes(CATEGORY_ALIASES[category][key])) {
+                return category;
+            }
+        }
+    }
+    return;
+}
+
+function getCategoryItems(category) {
+    return project.menu[category].map(item => {
+        let alts = [item.title + '~' + item.id];
+        if (item.alt) {
+            item.alt.forEach(alternative => alts.push(alternative + '~' + item.id));
+        }
+        return alts;
+    }).flat().join('|');
+}
+
 //TODO get categories from the menu and augment them with aliases later
 project.CATEGORY_LIST = _.flatten(Object.keys(CATEGORY_ALIASES).map(category => CATEGORY_ALIASES[category].map(alt => alt + '_' + '~' + category))).join('|');
 
@@ -91,3 +119,8 @@ project.ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
 }, {});
 
 project.ITEMS_INTENT = AVAILABLE_ITEMS_INTENT + '|' + UNAVAILABLE_DISHES_INTENT + '|' + CATEGORY_INTENT;
+
+project.utils = {
+    findCategory,
+    getCategoryItems,
+}
