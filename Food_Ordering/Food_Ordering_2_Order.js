@@ -75,27 +75,30 @@ function addItems(p, items, shift) {
     for (let i = 0; i < items.length; i++) {
         let id, name;
         if (items[i].value && items[i].label) {
-            if (items[i].label !== 'unavailable' && items[i].label !== 'category') {
-                id = items[i].label;
-            }
-            name = items[i].value.toLowerCase();
-            if (!id) {
-                p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
-            } else {
-                foundItemsCounter++;
-                let number = p.NUMBER_ && p.NUMBER_[i - shift] ? Math.ceil(p.NUMBER_[i - shift].number) : 1;
-                if (number > 99) {
-                    number = 1;
-                    p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
-                }
-                p.play({command: 'addToCart', item: id, quantity: number});
-                answer += foundItemsCounter > 1 ? " and " : "Added ";
-                answer += `${number} ${items[i].value} `;
-                if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
-                    answer += number > 1 ? "pizzas " : "pizza ";
-                }
-                lastId = id;
-                lastName = name;
+            switch (items[i].label) {
+                case 'unavailable':
+                    p.play(`(Sorry,|) (I can't find|we don't have) ${items[i].value} in the menu.`);
+                    break;
+                case 'category':
+                    p.play(`You will need to specify an exact ${items[i].value}.`);
+                    break;
+                default:
+                    id = items[i].label;
+                    name = items[i].value.toLowerCase();
+                    foundItemsCounter++;
+                    let number = p.NUMBER_ && p.NUMBER_[i - shift] ? Math.ceil(p.NUMBER_[i - shift].number) : 1;
+                    if (number > 99) {
+                        number = 1;
+                        p.play(`(Sorry,|) we don't have that many ${items[i].value}. (So I've added|Will add) ${number} instead.`);
+                    }
+                    p.play({command: 'addToCart', item: id, quantity: number});
+                    answer += foundItemsCounter > 1 ? " and " : "Added ";
+                    answer += `${number} ${items[i].value} `;
+                    if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
+                        answer += number > 1 ? "pizzas " : "pizza ";
+                    }
+                    lastId = id;
+                    lastName = name;
             }
         }
     }
@@ -115,7 +118,7 @@ function addItems(p, items, shift) {
 // +add category
 ////////////////
 let getProduct = context(() => {
-    intent("(Add|I want|order|get me|and|) $(ITEM p:ITEMS_INTENT)", p => {
+    intent(`(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM p:ITEMS_INTENT)`, p => {
         return p.resolve(p.ITEM);
     });
 });
@@ -159,46 +162,51 @@ intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a
         p.play("(Sorry,|) you should provide two exact item names in your request");
         return;
     }
-    let delId;
-    if (p.ITEM_[0].label !== 'unavailable' && p.ITEM_[0].label !== 'category') {
-        delId = p.ITEM_[0].label;
+    let delId, addId;
+    switch (p.ITEM_[0].label) {
+        case 'unavailable':
+            p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0].value} in the menu.`);
+            return;
+        case 'category':
+            p.play(`You will need to specify an exact ${p.ITEM_[0].value}.`);
+            return;
+        default:
+            delId = p.ITEM_[0].label;
     }
-    if (!delId) {
-        p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0].value} in the menu.`);
-    } else {
-        let addId;
-        if (p.ITEM_[1].label !== 'unavailable' && p.ITEM_[1].label !== 'category') {
-            addId = p.ITEM_[1].label;
-        }
-        let delName = p.ITEM_[0].value.toLowerCase();
-        let addName = p.ITEM_[1].value.toLowerCase();
-        if (!addId) {
+    switch (p.ITEM_[1].label) {
+        case 'unavailable':
             p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[1].value} in the menu.`);
-        } else {
-            p.state.lastId = addId;
-            p.state.lastName = addName;
-            let delNumber = p.NUMBER_ && p.NUMBER_[0] ? p.NUMBER_[0].number : 1;
-            let number_add = p.NUMBER_ && p.NUMBER_[1] ? p.NUMBER_[1].number : 1;
-            let postfix_add = "";
-            let postfix_del = "";
-            if (project.ID_TO_TYPES[addId] === "pizza" && !addName.includes("pizza")) {
-                postfix_add = number_add > 1 ? "pizzas" : "pizza";
-            }
-            if (project.ID_TO_TYPES[delId] === "pizza" && !delName.includes("pizza")) {
-                postfix_del = delNumber > 1 ? "pizzas" : "pizza";
-            }
-            let ans = '';
-            let order = p.visual.order || {};
-            if (!order[delId]) {
-                ans = `${p.ITEM_[0].value} has not been ordered yet, `;
-            } else {
-                p.play({command: 'removeFromCart', item: delId, quantity: delNumber});
-                ans = `Removed ${delNumber} ${p.ITEM_[0].value} ${postfix_del} and `;
-            }
-            p.play({command: 'addToCart', item: addId, quantity: number_add});
-            p.play(ans + ` added ${number_add} ${p.ITEM_[1].value} ${postfix_add}.`);
-        }
+            return;
+        case 'category':
+            p.play(`You will need to specify an exact ${p.ITEM_[1].value}.`);
+            return;
+        default:
+            addId = p.ITEM_[1].label;
     }
+    let delName = p.ITEM_[0].value.toLowerCase();
+    let addName = p.ITEM_[1].value.toLowerCase();
+    p.state.lastId = addId;
+    p.state.lastName = addName;
+    let delNumber = p.NUMBER_ && p.NUMBER_[0] ? p.NUMBER_[0].number : 1;
+    let number_add = p.NUMBER_ && p.NUMBER_[1] ? p.NUMBER_[1].number : 1;
+    let postfix_add = "";
+    let postfix_del = "";
+    if (project.ID_TO_TYPES[addId] === "pizza" && !addName.includes("pizza")) {
+        postfix_add = number_add > 1 ? "pizzas" : "pizza";
+    }
+    if (project.ID_TO_TYPES[delId] === "pizza" && !delName.includes("pizza")) {
+        postfix_del = delNumber > 1 ? "pizzas" : "pizza";
+    }
+    let ans = '';
+    let order = p.visual.order || {};
+    if (!order[delId]) {
+        ans = `${p.ITEM_[0].value} has not been ordered yet, `;
+    } else {
+        p.play({command: 'removeFromCart', item: delId, quantity: delNumber});
+        ans = `Removed ${delNumber} ${p.ITEM_[0].value} ${postfix_del} and `;
+    }
+    p.play({command: 'addToCart', item: addId, quantity: number_add});
+    p.play(ans + ` added ${number_add} ${p.ITEM_[1].value} ${postfix_add}.`);
     p.play({command: 'navigation', route: '/cart'});
 });
 /////////////////

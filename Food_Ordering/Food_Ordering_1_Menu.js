@@ -43,7 +43,7 @@ const AVAILABLE_ITEMS = _.reduce(project.menu, (a, category) => {
     return a;
 }, {});
 
-project.AVAILABLE_ITEMS_INTENT = _.flatten(Object.keys(AVAILABLE_ITEMS).map(id => AVAILABLE_ITEMS[id].map(alt => alt + '_' + '~' + id))).join('|');
+const AVAILABLE_ITEMS_INTENT = _.flatten(Object.keys(AVAILABLE_ITEMS).map(id => AVAILABLE_ITEMS[id].map(alt => alt + '_' + '~' + id))).join('|');
 
 project.AVAILABLE_ITEMS_BY_ID = _.reduce(project.menu, (a, category) => {
     category.forEach(item => a[item.id] = item);
@@ -71,7 +71,7 @@ project.unavailableDishes = [
     "ice cream",
 ];
 
-project.UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.map(dish => dish.toLowerCase() + '_' + '~' + 'unavailable').join('|');
+const UNAVAILABLE_DISHES_INTENT = project.unavailableDishes.map(dish => dish.toLowerCase() + '_' + '~' + 'unavailable').join('|');
 
 const CATEGORY_ALIASES = {
     "drink" : ["drink"],
@@ -83,9 +83,11 @@ const CATEGORY_ALIASES = {
 //TODO get categories from the menu and augment them with aliases later
 project.CATEGORY_LIST = _.flatten(Object.keys(CATEGORY_ALIASES).map(category => CATEGORY_ALIASES[category].map(alt => alt + '_' + '~' + category))).join('|');
 
+const CATEGORY_INTENT = _.flatten(Object.keys(CATEGORY_ALIASES).map(category => CATEGORY_ALIASES[category].map(alt => alt + '_' + '~' + 'category'))).join('|');
+
 project.ID_TO_TYPES = _.reduce(project.menu, (a, p) => {
     p.forEach(i => a[i.id] = i.type);
     return a;
 }, {});
 
-project.ITEMS_INTENT = project.AVAILABLE_ITEMS_INTENT + '|' + project.UNAVAILABLE_DISHES_INTENT;
+project.ITEMS_INTENT = AVAILABLE_ITEMS_INTENT + '|' + UNAVAILABLE_DISHES_INTENT + '|' + CATEGORY_INTENT;
