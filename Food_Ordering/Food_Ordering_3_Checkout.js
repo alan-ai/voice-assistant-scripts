@@ -9,6 +9,7 @@ Now there are four categories for food: drinks, pizza, street food, desserts.
 intent(
     "That's (all|it)",
     "(Ready to|) checkout",
+    "Finish (order|)",
     p => {
         if (_.isEmpty(p.visual.order) || !p.visual.total) {
             p.play("Your cart is empty, please make an order first.");
@@ -22,14 +23,6 @@ intent(
         p.then(checkout);
     }
 );
-
-intent("Finish (order|)", p => {
-    if (_.isEmpty(p.visual.order)) {
-        p.play("Please, add something to your order first");
-    } else {
-        p.play({command: 'finishOrder'});
-    }
-});
 
 let playDelivery = function (p, address, date, time) {
     if (!address) {
