@@ -230,8 +230,8 @@ intent(
 
 intent(
     "Make the address $(LOC)",
-    "Set address to $(LOC)",
-    "Address (is|) $(LOC)",
+    "(Set|Change|Make the) (delivery|) address (to|) $(LOC)",
+    "(The|) address (is|) $(LOC)",
     p => {
         p.play({command: 'address', address: p.LOC.value});
         p.play({command: 'highlight', id: 'address'});

@@ -126,6 +126,7 @@ let getProduct = context(() => {
 intent(
     "What (kind of|) $(CAT p:CATEGORY_LIST) do you have",
     "What (kind|kinds) of $(CAT p:CATEGORY_LIST)",
+    "Do you have (any|any of the|) $(CAT p:CATEGORY_LIST)",
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(NUMBER) $(CAT p:CATEGORY_LIST)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(CAT p:CATEGORY_LIST)`,
     async p => {
