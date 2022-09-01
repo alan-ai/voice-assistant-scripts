@@ -222,8 +222,15 @@ intent(
     p => {
         let order = p.visual.order || {};
         let id;
-        if (p.ITEM.label !== 'unavailable' && p.ITEM.label !== 'category') {
-            id = p.ITEM.label;
+        switch (p.ITEM.label) {
+            case 'unavailable':
+                p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0].value} in the menu.`);
+                return;
+            case 'category':
+                p.play(`You will need to specify an exact ${p.ITEM_[0].value}.`);
+                return;
+            default:
+                id = p.ITEM.label;
         }
         if (!order[id]) {
             p.play(`${p.ITEM.value} has not been ordered yet`);
