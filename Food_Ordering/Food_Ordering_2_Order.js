@@ -69,7 +69,6 @@ intent(
     }
 );
 
-//TODO dynamic user scope entity with items only from the category in question
 let ctxClarifyCategoryItem = context(() => {
     intent(`(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM u:clarifyCategoryItems)`, p => {
         return p.resolve(p.ITEM);
@@ -107,11 +106,7 @@ async function addItems(p, items, shift) {
                     let category = project.utils.findCategory(name);
                     let pluralizedName = name.endsWith('s') ? name : name + "s";
                     p.play({command: 'navigation', route: `/menu/${category}`});
-                    p.play(
-                        `We have (a few|several) ${pluralizedName} available:`,
-                        `You can choose from a few different ${pluralizedName}:`,
-                        `(There are|We have) a few types of ${pluralizedName} (on the menu|available):`
-                    );
+                    p.play(`(We have|There are) (a few|different|several) (types of|) ${pluralizedName} (for every taste|to choose from|on our menu):`);
                     for (let i = 0; i < project.menu[category].length; i++) {
                         p.play({command: 'highlight', id: project.menu[category][i].id});
                         p.play((i === project.menu[category].length - 1 ? "and " : "") + project.menu[category][i].title);
@@ -184,11 +179,7 @@ intent(
         let category = p.CAT.label;
         let pluralizedName = p.CAT.value.endsWith('s') ? p.CAT.value : p.CAT.value + "s";
         p.play({command: 'navigation', route: `/menu/${category}`});
-        p.play(
-            `We have (a few|several) ${pluralizedName} available:`,
-            `You can choose from a few different ${pluralizedName}:`,
-            `(There are|We have) a few types of ${pluralizedName} (on the menu|available):`
-        );
+        p.play(`(We have|There are) (a few|different|several) (types of|) ${pluralizedName} (for every taste|to choose from|on our menu):`);
         for (let i = 0; i < project.menu[category].length; i++) {
             p.play({command: 'highlight', id: project.menu[category][i].id});
             p.play((i === project.menu[category].length - 1 ? "and " : "") + project.menu[category][i].title);
@@ -217,13 +208,13 @@ intent(
 /////////////////
 intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a|) $(ITEM p:ITEMS_INTENT)", p => {
     if (p.ITEM_ && p.ITEM_.length !== 2) {
-        p.play("(Sorry,|) you should provide two exact item names in your request");
+        p.play("Please name an item to replace and an item to be added instead");
         return;
     }
     let delId, addId;
     switch (p.ITEM_[0].label) {
         case 'unavailable':
-            p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0].value} in the menu.`);
+            p.play(`(Sorry,|) ${p.ITEM_[0].value} is not on the menu`);
             return;
         case 'category':
             p.play(`You will need to specify an exact ${p.ITEM_[0].value}.`);
@@ -233,7 +224,7 @@ intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a
     }
     switch (p.ITEM_[1].label) {
         case 'unavailable':
-            p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[1].value} in the menu.`);
+            p.play(`(Sorry,|) ${p.ITEM_[1].value} is not on the menu`);
             return;
         case 'category':
             p.play(`You will need to specify an exact ${p.ITEM_[1].value}.`);
@@ -282,7 +273,7 @@ intent(
         let id;
         switch (p.ITEM.label) {
             case 'unavailable':
-                p.play(`(Sorry,|) (I can't find|we don't have) ${p.ITEM_[0].value} in the menu.`);
+                p.play(`(Sorry,|) ${p.ITEM_[0].value} is not on the menu`);
                 return;
             case 'category':
                 p.play(`You will need to specify an exact ${p.ITEM_[0].value}.`);

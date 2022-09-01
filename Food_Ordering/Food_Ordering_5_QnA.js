@@ -46,18 +46,15 @@ intent(
                 p.play("Here you can navigate through the menu and add or remove food from your order. To open a menu category, say '(Open|go to|show me) (drinks|pizza|street food|desserts)'. To add an item to your cart, say 'add taco' or 'add (2|3) (burgers|margaritas|latte)'. To remove an item from your cart, say 'remove taco' or 'remove (2|3) (burgers|margritas)'. To finish order and checkout, say 'that is all' or 'checkout'.");
                 break;
             case "/cart":
-                p.play("You are in your cart. Here you will answer a few questions to provide the delivery details. You can change the address by saying 'set address' and update the delivery time with the 'set time' voice command.");
+                p.play("You are in your cart. Here you will answer a few questions to provide the delivery details. To change the address, say: 'set address'. To update the delivery time, say: 'set time'");
                 break;
                 //TODO: Not returned in VS route
             case "time":
-                p.play("Please, enter or say at what time we should deliver your order.");
+                p.play("Please provide the delivery time. You can type or say it.");
                 break;
                 //TODO: Not returned in VS route
             case "address":
-                p.play(
-                    "Here you can provide the address to deliver your order.",
-                    "Please, enter or say the delivery address"
-                );
+                p.play("Please provide the delivery address. You can type or say it.");
                 break;
             case "/finish-order":
                 p.play("Your order is complete. To place another order, say 'go back' or 'open menu' and add items to the cart");
