@@ -6,10 +6,10 @@ This is a script for Food Ordering demo app for delivering food
 Now there are four categories for food: drinks, pizza, street food, desserts.
 */
 
-// corpus(
-//     {url: "https://en.wikipedia.org/wiki/Fast_food", depth: 1},
-//     {url: "https://resources.workable.com/waiter-or-waitress-job-description", depth: 1},
-// );
+corpus(
+    {url: "https://en.wikipedia.org/wiki/Fast_food", depth: 1},
+    {url: "https://resources.workable.com/waiter-or-waitress-job-description", depth: 1},
+);
 
 projectAPI.greet = (p, param, callback) => {
     p.play("Welcome to the food ordering demo app! (How can I help you|What can I get for you|May I take your order|What would you like to order)?");
@@ -28,6 +28,14 @@ intent(
     p => {
         p.play({command: 'navigation', route: '/menu'});
         p.play("We (have several|offer) pizzas, street foods, desserts, and drinks available. (What would you like to order?|To place an order, choose a food category and add items from the menu to the cart.)");
+    }
+);
+
+intent(
+    "What can I eat",
+    "I would like something to eat",
+    p => {
+        p.play("We (have|offer) street food and pizzas, what would you like (to eat|)?");
     }
 );
 
