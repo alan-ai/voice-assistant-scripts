@@ -174,7 +174,7 @@ intent(
     "What (kind|kinds) of $(CAT p:CATEGORY_LIST)",
     "Do you have (any|any of the|) $(CAT p:CATEGORY_LIST)",
     "I would like some $(CAT p:CATEGORY_LIST)",
-    "I would like something to $(CAT drink~drink)",
+    "I (would like|want) (something|) $(TO to) $(CAT drink~drink)",
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(NUMBER) $(CAT p:CATEGORY_LIST)`,
     `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(CAT p:CATEGORY_LIST)`,
     async p => {
