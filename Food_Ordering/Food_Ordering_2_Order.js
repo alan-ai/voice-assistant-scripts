@@ -70,6 +70,7 @@ intent(
 );
 
 let ctxClarifyCategoryItem = context(() => {
+    //TODO handle numbers and multiple items
     intent(
         `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM u:clarifyCategoryItems)`,
         `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(NUMBER) $(ITEM u:clarifyCategoryItems)`,
