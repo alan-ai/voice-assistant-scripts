@@ -59,7 +59,7 @@ intent(
             } else {
                 p.play({command: 'addToCart', item: p.state.lastId, quantity: number});
                 p.play(
-                    `Added another ${number} ${p.state.lastName}`,
+                    `Added another ${number == 1 ? '' : number} ${p.state.lastName}`,
                     `Added ${number} more ${p.state.lastName}`
                 );
             }
@@ -133,7 +133,7 @@ async function addItems(p, items, shift) {
                         }
                         p.play({command: 'addToCart', item: id, quantity: number});
                         answer += foundItemsCounter > 1 ? " and " : "Added ";
-                        answer += `${number} ${clarifiedName} `;
+                        answer += `${number == 1 ? '' : number} ${clarifiedName} `;
                         if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
                             answer += number > 1 ? "pizzas " : "pizza ";
                         }
@@ -150,7 +150,7 @@ async function addItems(p, items, shift) {
                     }
                     p.play({command: 'addToCart', item: id, quantity: number});
                     answer += foundItemsCounter > 1 ? " and " : "Added ";
-                    answer += `${number} ${items[i].value} `;
+                    answer += `${number == 1 ? '' : number} ${items[i].value} `;
                     if (project.ID_TO_TYPES[id] === "pizza" && !name.includes("pizza")) {
                         answer += number > 1 ? "pizzas " : "pizza ";
                     }
@@ -259,10 +259,10 @@ intent("(Change|Replace) (one of|) (the|) $(ITEM p:ITEMS_INTENT) (to|by|with) (a
         ans = `${p.ITEM_[0].value} has not been ordered yet, `;
     } else {
         p.play({command: 'removeFromCart', item: delId, quantity: delNumber});
-        ans = `Removed ${delNumber} ${p.ITEM_[0].value} ${postfix_del} and `;
+        ans = `Removed ${delNumber == 1 ? '' : delNumber} ${p.ITEM_[0].value} ${postfix_del} and `;
     }
     p.play({command: 'addToCart', item: addId, quantity: number_add});
-    p.play(ans + ` added ${number_add} ${p.ITEM_[1].value} ${postfix_add}.`);
+    p.play(ans + ` added ${number_add == 1 ? '' : number_add} ${p.ITEM_[1].value} ${postfix_add}.`);
     p.play({command: 'navigation', route: '/cart'});
 });
 /////////////////
