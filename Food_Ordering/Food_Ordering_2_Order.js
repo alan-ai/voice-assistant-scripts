@@ -70,9 +70,13 @@ intent(
 );
 
 let ctxClarifyCategoryItem = context(() => {
-    intent(`(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM u:clarifyCategoryItems)`, p => {
-        return p.resolve(p.ITEM);
-    });
+    intent(
+        `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(ITEM u:clarifyCategoryItems)`,
+        `(${ADD_ITEMS_SENTENCE_START_INTENT}) $(NUMBER) $(ITEM u:clarifyCategoryItems)`,
+        p => {
+            return p.resolve(p.ITEM);
+        }
+    );
 
     intent(
         "(No|nope|stop|back|go back|return)",
