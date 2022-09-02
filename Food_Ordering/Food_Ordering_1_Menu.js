@@ -7,9 +7,8 @@ Now there are four categories for food: drinks, pizza, street food, desserts.
 */
 
 onCreateUser(p => {
-    p.userData.clarifyCategory = null;
-    p.userData.clarifyCategoryItems = {};
-    p.userData.clarifyCategoryItems.en = "";
+    p.userData.clarifyCategory = {en: ""};
+    p.userData.clarifyCategoryItems = {en: ""};
 });
 
 

@@ -82,15 +82,15 @@ let ctxClarifyCategoryItem = context(() => {
     intent(
         "(No|nope|stop|back|go back|return)",
         "(It is|) (not valid|invalid|not correct)",
-        "(I|) (don't|do not) want",
+        `(I|) (don't|do not) want $(CAT u:clarifyCategory|)`,
         p => {
-            p.play(`OK, I will not add any ${p.userData.clarifyCategory} to your order.`);
+            p.play(`OK, I will not add any ${p.userData.clarifyCategory.en} to your order.`);
             p.resolve(null);
         }
     );
 
     fallback(p => {
-        p.play(`What ${p.userData.clarifyCategory ? p.userData.clarifyCategory : ""} would you like?`);
+        p.play(`What ${p.userData.clarifyCategory.en ? p.userData.clarifyCategory.en : ""} would you like?`);
     });
 });
 
@@ -118,10 +118,10 @@ async function addItems(p, items, shift) {
                     }
                     p.play({command: 'highlight', id: ''});
                     p.play(`Which ${pluralizedName} would you like?`);
-                    p.userData.clarifyCategory = category;
+                    p.userData.clarifyCategory.en = category;
                     p.userData.clarifyCategoryItems.en = project.utils.getCategoryItems(category);
                     let clarifiedItem = await p.then(ctxClarifyCategoryItem);
-                    p.userData.clarifyCategory = null;
+                    p.userData.clarifyCategory.en = "";
                     p.userData.clarifyCategoryItems.en = "";
                     if (clarifiedItem){
                         let clarifiedName = clarifiedItem.value.toLowerCase();
@@ -194,10 +194,10 @@ intent(
         p.play({command: 'highlight', id: ''});
         p.play(`Which ${pluralizedName} would you like?`);
         if (p.NUMBER) {
-            p.userData.clarifyCategory = category;
+            p.userData.clarifyCategory.en = category;
             p.userData.clarifyCategoryItems.en = project.utils.getCategoryItems(category);
             let product = await p.then(ctxClarifyCategoryItem);
-            p.userData.clarifyCategory = null;
+            p.userData.clarifyCategory.en = "";
             p.userData.clarifyCategoryItems.en = "";
             if (product) {
                 let items = [product];
