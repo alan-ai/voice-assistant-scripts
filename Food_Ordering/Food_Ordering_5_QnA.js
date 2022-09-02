@@ -11,6 +11,11 @@ Now there are four categories for food: drinks, pizza, street food, desserts.
 //     {url: "https://resources.workable.com/waiter-or-waitress-job-description", depth: 1},
 // );
 
+corpus(
+    {url: "https://www.mersec.net/1/mercedes_benz_c_class_w205_2015_2021_owners_manual.html", depth: 3}
+);
+
+
 projectAPI.greet = (p, param, callback) => {
     p.play("Welcome to the food ordering demo app! (How can I help you|What can I get for you|May I take your order|What would you like to order)?");
 };
